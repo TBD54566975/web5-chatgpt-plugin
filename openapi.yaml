@@ -42,6 +42,62 @@ paths:
               schema:
                 $ref: '#/components/schemas/instructionResponse'   
 
+  /help/write-send:
+    get:
+      operationId: writeSend
+      summary: Write to a local DWN and send to a remote (Alice to Bob)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/instructionResponse'      
+  /help/query:
+    get:
+      operationId: helpQuery
+      summary: how to query data via a records id
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/instructionResponse'                                
+  /help/query-full:
+    get:
+      operationId: helpQueryFull
+      summary: how to query data from local or remote DWNs via protocol
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/instructionResponse'
+  /help/protocol:
+    get:
+      operationId: helpProtocol
+      summary: What a protocol in web5 is with an example and how to set it up/install it
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/instructionResponse'                
+  /help/html-import:
+    get:
+      operationId: helpHtml
+      summary: How to setup and use web5 in a html page script tag
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/instructionResponse'                     
+  
 
 components:
   schemas:

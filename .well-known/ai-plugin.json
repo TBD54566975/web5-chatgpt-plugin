@@ -1,6 +1,6 @@
 {
     "schema_version": "v1",
-    "name_for_human": "Web5 code assistant Plugin",
+    "name_for_human": "Web5 assistant Plugin",
     "name_for_model": "web5",
     "description_for_human": "Plugin for assisting developers building a web5 application by providing examples, documentation and writing web5 code.",
     "description_for_model": "Plugin for assisting developers building a web5 application by providing examples, documentation and writing web5 code.",
