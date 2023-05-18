@@ -1,8 +1,14 @@
-# ChatGPT plugins quickstart
+# Web5 assistant plugin for ChatGPT
 
-Get a todo list ChatGPT plugin up and running in under 5 minutes using Python. If you do not already have plugin developer access, please [join the waitlist](https://openai.com/waitlist/plugins).
+This ChatGPT plugin is an assistant that can teach you about web5, Decentralized Web Nodes and more, and can even write web5 code for you if you ask it nicely. 
+
+## Some examples
+
+
 
 ## Setup
+
+Firstly, you need to have a ChatGPT account and access to GPT-4 and the plugin store. If you don't have access yet, please join the waitlist [here](https://openai.com/waitlist/plugins).
 
 To install the required packages for this plugin, run the following command:
 
