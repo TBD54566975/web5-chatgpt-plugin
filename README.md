@@ -4,7 +4,11 @@ This ChatGPT plugin is an assistant that can teach you about web5, Decentralized
 
 ## Some examples
 
+![ex1](https://github.com/TBD54566975/web5-chatgpt-plugin/assets/14976/b3d8d7d3-47c9-4c71-8740-f8e8f0fdf2da)
 
+![ex2](https://github.com/TBD54566975/web5-chatgpt-plugin/assets/14976/5d7f6029-6399-4c35-a44e-7a426d866577)
+![ex3](https://github.com/TBD54566975/web5-chatgpt-plugin/assets/14976/64ff76f6-7b3b-4bde-95e7-a66438990d77)
+![ex4](https://github.com/TBD54566975/web5-chatgpt-plugin/assets/14976/695b4def-272d-462d-8956-16ce835a6506)
 
 ## Setup
 
