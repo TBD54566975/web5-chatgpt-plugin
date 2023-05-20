@@ -1,6 +1,6 @@
 # Web5 assistant plugin for ChatGPT
 
-This ChatGPT plugin is an assistant that can teach you about web5, Decentralized Web Nodes and more, and can even write web5 code for you if you ask it nicely. 
+This ChatGPT plugin is an assistant that can teach you about web5, Decentralized Web Nodes and more, and can even write web5 code for you if you ask it nicely. **Requires a  ChatGPT Plugin developer access**
 
 ## Some examples
 
