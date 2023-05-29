@@ -45,7 +45,7 @@ async def openapi_spec():
             "version": "v1"
         },
         "servers": [
-            {"url": f"http://{host}"}
+            {"url": f"https://web5-chatgpt-plugin.etfroh3e9sqd2.us-east-1.cs.amazonlightsail.com"}
         ],
         "paths": {},
         "components": {
