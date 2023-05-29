@@ -1,0 +1,14 @@
+Create a record in Alice's DWN, and send it directly to Bobs DWeb Nodes.
+
+-----
+
+// Create a record in Alice's DWN
+const { record: aliceRecord } = await web5.dwn.records.create({
+  data: "Hello Web5",
+  message: {
+    dataFormat: 'text/plain',
+  },
+});
+
+// Alice writes the same record to Bob's DWN
+const { status } = await record.send(bobDid);

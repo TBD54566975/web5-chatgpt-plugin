@@ -1,0 +1,35 @@
+Query from your DWN or remote DWeb nodes. Uses protocol as filter criteria but can also use a 'schema' field instead of protocol (which is a jsonschema)
+
+-----
+
+//A. Your local
+
+const { protocols, status } = await dwn.protocols.query({
+  message: {
+    filter: {
+      protocol: emailProtocolDefinition.protocol
+    }
+  }
+});
+
+//B. Your remote
+const { protocols, status } = await dwn.protocols.query({
+  from: aliceDid,
+  message: {
+    filter: {
+      protocol: emailProtocolDefinition.protocol
+    }
+  }
+});
+
+// C. Someone else's remote
+const { protocols, status } = await dwn.protocols.query({
+  from: bobDid,
+  message: {
+    filter: {
+      protocol: emailProtocolDefinition.protocol
+    }
+  }
+});
+
+console.log(response.entries) // logs array of Record class instances

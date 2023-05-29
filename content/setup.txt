@@ -1,0 +1,15 @@
+This is how you install it from the command line for npm, showing the version. A package.json example is also provided.
+
+-----
+
+npm install @tbd54566975/web5@0.7.5
+
+# modify package.json to be of module type (this is recommended): 
+
+{
+  "dependencies": {
+    "@tbd54566975/web5": "0.7.5"
+  },
+  "type": "module"
+}
+

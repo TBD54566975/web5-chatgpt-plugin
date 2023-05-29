@@ -1,0 +1,58 @@
+Shows how to install a protocol, and also has an example of a web5 protocol defintion that allows a credential issuance flow. Protocols allow threaded conversations.
+
+-----
+
+// installing a protocol in your local DWN looks like this:    
+const { protocol, status } = await web5.dwn.protocols.configure({
+  message: {
+    definition: chatProtocolDefinition
+  }
+});    
+
+// The following is an example protocol in json: 
+
+{
+  "protocol": "http://credential-issuance-protocol.xyz",
+  "types": {
+    "credentialApplication": {
+      "schema": "https://identity.foundation/credential-manifest/schemas/credential-application",
+      "dataFormats": ["application/json"]
+    },
+    "credentialResponse": {
+      "schema": "https://identity.foundation/credential-manifest/schemas/credential-response",
+      "dataFormats": ["application/json"]
+    }
+  },
+  "structure": {
+    "credentialApplication": {
+      "$actions": [
+        {
+          "who": "anyone",
+          "can": "write"
+        }
+      ],
+      "credentialResponse": {
+        "$actions": [
+          {
+            "who": "recipient",
+            "of": "credentialApplication",
+            "can": "write"
+          }
+        ]
+      }
+    }
+  }
+}
+
+
+// using a protocol looks like this: 
+
+    const { record, status } = await web5.dwn.records.write({
+      data: ding,
+      message: {
+        protocol: 'http://credential-issuance-protocol.xyz',
+        protocolPath: 'credentialApplication',
+        schema: '...',
+        recipient: did
+      }
+    });

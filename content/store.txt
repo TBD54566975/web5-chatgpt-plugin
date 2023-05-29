@@ -1,0 +1,11 @@
+Shows how to store in the web5 DWN.
+
+-----
+
+        const { record } = await web5.dwn.records.write(did.id, {
+          author: did.id,
+          data: "Hello Web5",
+          message: {
+            dataFormat: 'text/plain',
+          },
+        });

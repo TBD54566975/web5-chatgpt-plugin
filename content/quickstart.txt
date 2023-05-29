@@ -1,0 +1,54 @@
+To get going quickly, follow these instructions to setup a node.js javascript project that uses web5 and shows a range of actions.
+
+-----
+
+
+command line: npm install @tbd54566975/web5@0.7.5
+
+
+# modify package.json:
+{
+  "dependencies": {
+    "@tbd54566975/web5": "0.7.5"
+  },
+  "type": "module"
+}
+
+# create an index.js
+
+
+mkdir src
+cd src
+touch index.js
+
+
+# in index.js: 
+
+import { Web5 } from '@tbd54566975/web5';
+
+
+# The Web5 class is an isolated API object for doing all things Web5 and the connect() function creates an instance of Web5.
+# In Web5 apps, a user’s unique identifier - like an email address - is called a Decentralized Identifier (DID). We are building a decentralized app, so your users are using identifiers that aren't tied to a centralized authority.
+# In index.js below the import statement, create a new instance of Web5:
+
+const { web5, did: aliceDid } = await Web5.connect();
+
+
+A DWN is a personal data store - a platform for messages, pictures, videos, medical records, and just about any content a user may want to store.
+
+Read more about DWN
+Add the following to index.js:
+
+const { record } = await web5.dwn.records.create({
+  data: "Hello Web5",
+  message: {
+    dataFormat: 'text/plain',
+  },
+});
+
+
+Given permission from the user, your app can delete records from their DWN. Similar to reading, we’ll use the record object to remove the record.
+
+Add the following to index.js:
+
+const deleteResult = await record.delete();
