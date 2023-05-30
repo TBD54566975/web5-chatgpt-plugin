@@ -41,7 +41,7 @@ async def openapi_spec():
         "openapi": "3.0.1",
         "info": {
             "title": "Web5 Plugin",
-            "description": "A plugin that assist users to build web5 applications using the web5 sdk.",
+            "description": "An assistant for helping build web5 applications using the web5 sdk.",
             "version": "v1"
         },
         "servers": [
