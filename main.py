@@ -40,7 +40,7 @@ async def openapi_spec():
     base_openapi = {
         "openapi": "3.0.1",
         "info": {
-            "title": "Web5 Plugin",
+            "title": "Web5 assistant",
             "description": "An assistant for helping build web5 applications using the web5 sdk.",
             "version": "v1"
         },
