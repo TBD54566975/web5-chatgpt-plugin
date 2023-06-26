@@ -5,7 +5,7 @@ Shows how to use web5 in a html page script tag, loading from a CDN.
 
 <script type="module">
 
-    import { Web5 } from 'https://cdn.jsdelivr.net/npm/@tbd54566975/web5@0.7.5/dist/browser.mjs';
+    import { Web5 } from 'https://cdn.jsdelivr.net/npm/@tbd54566975/web5@0.7.9/dist/browser.mjs';
     
     // this will connect, create a new did if necessary
     const { web5, did: myDid } = await Web5.connect();

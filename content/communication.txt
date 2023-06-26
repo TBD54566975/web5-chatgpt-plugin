@@ -2,10 +2,13 @@ If you want to have an app that has peer to peer communication (from DID to DID)
 
 -----
 
-dinger.js:
+// file: dinger.js:
 
-import { Web5 } from 'https://cdn.jsdelivr.net/npm/@tbd54566975/web5@0.7.5/dist/browser.mjs';
+import { Web5 } from 'https://cdn.jsdelivr.net/npm/@tbd54566975/web5@0.7.9/dist/browser.mjs';
 
+
+// protocols are how web5 DWNs control access to storage. 
+// see here for more information: https://developer.tbd.website/docs/web5/learn/protocols 
 const dingerProtocolDefinition = {
   'protocol': 'https://dinger.app/protocol',
   'types': {

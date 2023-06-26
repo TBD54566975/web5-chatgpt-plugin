@@ -1,4 +1,4 @@
-Shows how to install a protocol, and also has an example of a web5 protocol defintion that allows a credential issuance flow. Protocols allow threaded conversations.
+Shows how to install a protocol, and also has an example of a web5 protocol defintion that allows a credential issuance flow. Protocols allow threaded conversations and more and are a key feature web5.
 
 -----
 
