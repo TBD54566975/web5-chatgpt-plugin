@@ -1,0 +1,18 @@
+Explains how sync works with DWeb Nodes (DWNs) and web5
+
+-----
+
+
+Users are able to possess multiple Decentralized Web Nodes (DWNs) and have the data across each of them synchronized. This provides end users with the ability to own their data in resilient and convenient ways.
+
+What is Sync?
+In the context of DWNs and Web5, sync is the ability to synchronize all data across a user's multiple DWNs.
+
+When an application calls Web5.connect(), by default, a DWN is created that runs in browser memory and is considered a local DWN.
+
+In addition, during Web5’s tech preview period, the SDK automatically defines two additional DWNs that are hosted by TBD and are remotely accessible (e.g., dwn.tbddev.org/dwn0, dwn.tbddev.org/dwn1).
+
+When an application takes an action on a user’s local DWN (i.e., create, update, delete), with sync enabled, that action is automatically replicated to the other DWNs associated with the user’s DID.
+
+You can read more about Sync and web5 here: https://developer.tbd.website/docs/web5/learn/sync/
+
