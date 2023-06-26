@@ -1,0 +1,85 @@
+Explains what the record class does
+
+-----
+
+Every modifying method of the Records class returns an instance of a Record object, which is a representation of the record(s) involved in the operation
+
+Properties:
+
+Instance Properties
+Each Record instance has the following instance properties:
+
+id
+attestation
+contextId
+dataFormat
+dateCreated
+dataCid
+dataSize
+dateModified
+datePublished
+encryption
+interface
+method
+parentId
+protocol
+protocolPath
+published
+recipient
+schema
+
+NOTE
+The id property is a unique identifier based on the record entry's composition. All entries across all records are deterministically unique.
+
+Properties:
+
+data
+A property with the following convenience methods that read out the data of the record entry in the corresponding formats:
+
+text()
+Returns a textual representation of the data
+json()
+Returns a parsed JSON object if the value is JSON data
+stream()
+Returns the raw stream of bytes for the data
+Code Example
+const recordText = await myRecord.data.text();
+
+Methods
+Method: send(did)
+Sends the record to the DWN endpoints of a provided DID
+
+Parameters
+did type: string:  The DID associated with the DWN endpoints where the record will be sent
+Return Value: The status of the request
+
+// Code Example
+const { record } = await web5.dwn.records.create({
+  data: "Hello World!",
+  message: {
+    dataFormat: "text/plain",
+  },
+});
+
+const { status } = await record.send("did:example:bob");
+
+
+
+Method: delete()
+Deletes record from DWN
+
+Return Value: The status of the request
+
+// Code Example
+const response = await record.delete();
+
+Method: update(request)
+Overwrites an existing record
+
+Parameters
+request type: RecordUpdateOptions
+
+Return Value: The status of the request
+
+//Code Example
+const response = await record.update({data: "Hello, I'm updated!"});

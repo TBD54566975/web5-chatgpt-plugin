@@ -55,11 +55,11 @@ async def openapi_spec():
                     "properties": {
                         "code": {
                             "type": "string",
-                            "description": "a sample piece of code"
+                            "description": "a sample piece of code or explanation."
                         },
                         "explanation": {
                             "type": "string",
-                            "description": "what the sample code does."
+                            "description": "what the sample code does or explanation is for."
                         }
                     }
                 }

@@ -1,0 +1,11 @@
+Explains what the dwn class does
+
+-----
+
+
+The dwn class is responsible for providing convenience methods related to DWNs
+
+Properties:
+
+records
+protocols

@@ -1,0 +1,140 @@
+Explanation of what the records class does
+
+-----
+
+For more details please see the api doc page: https://developer.tbd.website/api/web5-js/dwn/records
+
+The records class is responsible for providing convenience methods for CRUD operations interfacing with DWNs
+
+Data Types:
+
+Record
+Every modifying method of the records class returns an instance of a Record object, which is a representation of the record involved in the operation
+
+Methods:
+
+method: create(request)
+Creates a new record and stores it in the user's local DWN, remote DWNs, or another party's DWNs (if permitted)
+
+NOTE
+In order to also send the record to remote DWNs, create() should be followed by send()
+
+Parameters:
+request type: RecordsCreateRequest
+
+Return Value: response type: RecordsCreateResponse which is A response object containing the status of the request and a Record object if successful
+
+
+//Code Examples
+const { record } = await web5.dwn.records.create({
+  data: playlistJson,
+  message: {
+    recipient: 'did:example:alice'
+    protocol: "https://music.org/protocol",
+    schema: "https://schema.org/Playlist",
+    dataFormat: "application/json",
+  },
+});
+
+// this creates a record, but does not store it in the user's local DWN
+const { record } = await web5.dwn.records.create({
+  store: false,
+  data: "Hello again, World!",
+  message: {
+    dataFormat: "text/plain",
+  },
+});
+
+// this creates a record and stores it in the user's local DWN
+const { record } = await web5.dwn.records.create({
+  data: "Hello World!",
+  message: {
+    dataFormat: "text/plain",
+  },
+});
+
+// send the record to the user's remote DWNs
+const { status } = await record.send(myDid); 
+
+// send the newly generated record to Bob's DWNs
+const { status } = await record.send("did:example:bob");
+
+
+Method: write(request)
+The create() method is an alias for write() and both take the same request object properties, and return the same response.
+
+Method: query(request)
+Method for querying the DWN of a provided target
+
+Parameters
+request type: RecordsQueryRequest
+
+Return Value: response type: RecordsQueryResponse which is An object containing an array of records that match the query
+
+// Code Example
+const response = await web5.dwn.records.query({
+  from: 'did:example:alice',
+  message: {
+    filter: {
+      schema: 'https://schema.org/Playlist',
+      dataFormat: 'application/json'
+    }
+  }
+});
+  
+response.records.forEach(record => {
+    console.log(record.id);
+});
+
+
+
+Method: read(request)
+Reads a record stored in the user's local DWN, remote DWN, or another party's DWN (if permitted).
+
+Parameters
+request type: RecordsReadRequest
+
+Return Value type: RecordsReadResponse which is A response object containing the status of the request and a Record object if successful
+
+
+// Code Examples:
+
+// Reads the indicated record from the user's DWNs
+const { record } = await web5.dwn.records.read({
+  message: {
+    recordId: "bfw35evr6e54c4cqa4c589h4cq3v7w4nc534c9w7h5",
+  },
+});
+
+// assuming the record is a text payload, logs the text
+console.log(await record.data.text());
+
+// Reads the indicated record from Bob's DWNs
+const { record } = await web5.dwn.records.read({
+  from: "did:example:bob",
+  message: {
+    recordId: "bfw35evr6e54c4cqa4c589h4cq3v7w4nc534c9w7h5",
+  },
+});
+
+// assuming the record is a text payload, logs the text
+console.log(await record.data.text());
+
+
+
+Method: delete(request)
+Deletes a record stored in the user's local DWN, remote DWN, or another party's DWN (if permitted)
+
+Parameters
+request type: RecordsDeleteRequest
+
+Return Value type: RecordsDeleteResponse which is The status the request
+
+
+// Code Example:
+const response = await web5.dwn.records.delete({
+  from: 'did:example:alice',
+  message: {
+    recordId: 'bfw35evr6e54c4cqa4c589h4cq3v7w4nc534c9w7h5'
+  }
+});

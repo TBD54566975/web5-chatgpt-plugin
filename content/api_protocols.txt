@@ -1,0 +1,109 @@
+Explains what the protocol class does but not what a protocol is, see protocol docs for that.
+
+-----
+
+To see more detail, please look at this docs page: https://developer.tbd.website/api/web5-js/dwn/protocols
+
+Overview
+The protocols class is responsible for providing convenience methods for managing protocols between DWNs.
+
+Methods
+
+Method: configure(request)
+Configures a protocol definition in the user's local DWN, remote DWN, or another party's DWN (if permitted). Fields under the structure object of the Protocol definition are expected to be one of the type references matching those defined in the types object. The type structures are recursive, so types form a graph and each type can have within it further attached types or rule statements that are all denoted with the prefix $.
+
+NOTE
+In order to also send the protocol to remote DWNs, configure() should be followed by protocol.send(did)
+
+Parameters
+
+request type: ProtocolsConfigureRequest
+
+
+Return Value type: ProtocolsConfigureResponse: A response object containing the status of the request and a Protocol object if successful
+
+
+// Code Example
+const { protocol } = await web5.dwn.protocols.configure({
+  message: {
+    definition: {
+      protocol: "https://photos.org/protocol",
+      types: {
+        album: {
+          schema: "https://photos.org/protocol/album",
+          dataFormats: ["application/json"],
+        },
+        photo: {
+          schema: "https://photos.org/protocols/photo",
+          dataFormats: ["application/json"],
+        },
+        binaryImage: {
+          dataFormats: ["image/png", "jpeg", "gif"],
+        },
+      },
+      structure: {
+        album: {
+          $actions: [
+            {
+              who: "recipient",
+              can: "read",
+            },
+          ],
+        },
+        photo: {
+          $actions: [
+            {
+              who: "recipient",
+              can: "read",
+            },
+          ],
+          binaryImage: {
+            $actions: [
+              {
+                who: "author",
+                of: "photo",
+                can: "write",
+              },
+            ],
+          },
+        },
+      },
+    },
+  },
+});
+
+protocol.send(myDid); //sends the protocol configuration to the user's other DWNs.
+
+
+Method: query(request)
+Queries a DID's DWNs for the presence of a protocol. This method is useful in detecting what protocols a given DID has installed to enable interaction over the protocol.
+
+Parameters request type: ProtocolsQueryRequest
+
+
+Return Value type: ProtocolsQueryResponse: A response object containing the status of the request and an array of matching Protocol objects
+
+
+//Code Examples
+const { protocols } = await web5.dwn.protocols.query({
+  message: {
+    filter: {
+      protocol: "https://music.org/protocol",
+    },
+  },
+});
+
+// logs an array of protocol configurations installed on the user's DWN
+console.log(protocols);
+
+const { protocols } = await web5.dwn.protocols.query({
+  from: "did:example:bob",
+  message: {
+    filter: {
+      protocol: "https://music.org/protocol",
+    },
+  },
+});
+
+// logs an array of protocol configurations installed on Bob's DWN
+console.log(protocols);
