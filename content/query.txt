@@ -1,13 +1,13 @@
 Method for querying the DWeb Node of a provided target DID. 
 -----
 
-// The query request must contain the following:
-// author - string: The decentralized identifier of the DID signing the query. This may be the same as the target parameter if the target and the signer of the query are the same entity, which is common for an app querying the DWeb Node of its own user.
+// The query request can contain the following:
+// from - string: The DID of the DWN the query will fetch results from.
 // message - object: The properties of the DWeb Node Message Descriptor that will be used to construct a valid DWeb Node message.
 
 
-const response = await web5.dwn.records.query('did:example:bob', {
-  author: 'did:example:alice',
+const response = await web5.dwn.records.query({
+  from: 'did:example:alice',
   message: {
     filter: {
       schema: 'https://schema.org/Playlist',
