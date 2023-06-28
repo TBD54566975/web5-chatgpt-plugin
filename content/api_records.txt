@@ -53,7 +53,11 @@ const { record } = await web5.dwn.records.create({
   },
 });
 
-// send the record to the user's remote DWNs
+/* 
+sends the record to the user's remote DWN endpoints. This function only 
+needs to be called if you'd like to send the record to a user's remote DWNs 
+instantly and cannot wait for sync to occur.
+*/
 const { status } = await record.send(myDid); 
 
 // send the newly generated record to Bob's DWNs
