@@ -1,0 +1,30 @@
+Explains what is an agent in web5
+
+-----
+What is an agent?
+When you connect to Web5, you're connecting to an agent. You can think of an agent as a box that contains a user's DIDs, private keys, and a DWN (which can also hold VCs).
+
+Agents are capable of managing multiple DIDs and are permissioned to use the private keys of DIDs to act on a user's behalf.
+
+Why is it called an agent?
+Agent is a term that describes something that can act on your behalf, which is one of the goals for a Web5 agent.
+
+Where does an agent live?
+A user's agent can live anywhere. It could be a headless process that runs on their computer; it could be their phone; it could be running on a machine at home.
+
+Agents don’t necessarily have root access over the user's device or even their data, but they do have all the authority necessary to provide agency.
+
+Web5 doesn't have remote agents today, so it simply creates an embedded agent if one doesn't already exist. When connecting to a Web5 app, if the user doesn't have an agent at all, the library will create a fallback embedded agent directly in the browser and bootstrap that agent with a DID and a set of necessary keys needed to sign and encrypt things.
+
+Why can't I connect directly to the DWN without an agent?
+Simply put, DWNs are designed to be dumb.
+
+A DWN's purpose is to process messages. All messages must be signed and associated to an author and tenant. Authors and tenants are represented as DIDs.
+
+Messages are signed by a key associated to that DID. So an agent includes all of the things necessary to sign and store messages in a DWN.
+
+What are future plans for agents?
+In the near future, connecting to a Web5 app will invoke a UI that prompts a user to authenticate and grant an application access to said agent. Apps can then request permissions to interface with a user's agent to store things in their DWNs.
+
+You can read more about Agents here: https://developer.tbd.website/docs/web5/learn/agents
+
