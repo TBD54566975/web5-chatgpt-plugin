@@ -1,0 +1,42 @@
+Shows how to publish a record.
+
+-----
+
+When records are created, they are private by default. Private records are not accessible without the use of protocols or permissions. To make a record publicly available, the record must be published. 
+
+To publish a record, you must specify the `published` attribute as `true` in the message object on creation of the record. 
+
+To publish a record immediately:
+
+```js
+const {record} = await web5.dwn.records.create({
+    data: "a record that will be created and published now",
+    message: {
+        dataFormat: "text/plain",
+        published: true,
+    }
+});
+```
+
+
+To publish a record at a specific future or past date, you must include the `datePublished` attribute when creating the record. 
+If `datePublished` is not specified, it will publish the record immediately. If `datePublished` is specified, it will publish the record at the specified date.
+
+To publish a record at a future date (e.g., tomorrow):
+
+```js
+import { Temporal } from '@js-temporal/polyfill';
+
+let today = Temporal.Now.instant();
+let tomorrow = today.add({seconds: 86400});
+
+//Create a record
+const {record} = await web5.dwn.records.create({
+    data: "a record that will be created now and published tomorrow",
+    message: {
+        dataFormat: "text/plain",
+        published: true,
+        datePublished: tomorrow.toString({smallestUnit: 'microseconds' }),,
+    }
+});
+```
