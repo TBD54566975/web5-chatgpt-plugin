@@ -4,6 +4,8 @@ This is the source code for the ChatGPT plugin for Web5 assistant. You can find 
 
 This ChatGPT plugin is an assistant that can teach you about web5, Decentralized Web Nodes and more, and can even write web5 code for you if you ask it nicely.
 
+**_NOTE:_** this plugin is now available on the ChatGPT plugin store for all users of ChatGPT.
+
 ## Some examples
 
 ![ex1](https://github.com/TBD54566975/web5-chatgpt-plugin/assets/14976/b3d8d7d3-47c9-4c71-8740-f8e8f0fdf2da)
