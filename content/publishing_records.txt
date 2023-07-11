@@ -19,7 +19,7 @@ const {record} = await web5.dwn.records.create({
 ```
 
 
-To publish a record at a specific future or past date, you must include the `datePublished` when creating the record. 
+To publish a record at a specific future or past date, you must include the `datePublished` attribute when creating the record. 
 If `datePublished` is not specified, it will publish the record immediately. If `datePublished` is specified, it will publish the record at the specified date.
 
 To publish a record at a future date (e.g., tomorrow):
