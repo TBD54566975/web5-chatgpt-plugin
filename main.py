@@ -99,9 +99,9 @@ def ask_chat_route():
     query = request.args.get('query')
     resp = ask_chat(query)
     if resp:
-        return quart.Response(response=json.dumps({"answer": resp}), status=200)
+        return quart.Response(response=resp, status=200) #quart.Response(response=json.dumps({"answer": resp}), status=200)
     else:
-        return quart.Response(response=json.dumps({"error": "Unable to provide a relevant answer at this time."}), status=500)
+        return quart.Response(response="Unable to provide a relevant answer at this time.", status=500)
 
 def ask_chat(query):
     import openai
@@ -117,7 +117,7 @@ def ask_chat(query):
     )
     response_message = response["choices"][0]["message"]
 
-    # Step 2: check if GPT wanted to call a function
+    # check if GPT wanted to call a function
     if response_message.get("function_call"):
 
         print("-----> GPT wants to call a function " + str(response_message["function_call"]))
@@ -130,7 +130,7 @@ def ask_chat(query):
 
         function_response = code
 
-        # Step 4: send the info on the function call and function response to GPT
+        # send the info on the function call and function response to GPT
         messages.append(response_message)  # extend conversation with assistant's reply
         messages.append(
             {
