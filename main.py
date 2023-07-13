@@ -140,7 +140,7 @@ def ask_chat(query):
             }
         )  # extend conversation with function response
         second_response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-0613",
+            model="gpt-4",
             messages=messages,
         )  # get a new response from GPT where it can see the function response
 
