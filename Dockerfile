@@ -6,7 +6,7 @@ WORKDIR /app
 COPY . /app
 
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir --user quart quart_cors PyYAML
+    pip install --no-cache-dir --user quart quart_cors PyYAML openai
 
 # Runtime stage
 FROM python:3.9-slim as runtime
