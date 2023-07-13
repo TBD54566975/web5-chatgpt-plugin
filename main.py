@@ -6,7 +6,7 @@ import yaml
 import os
 
 
-app = quart_cors.cors(quart.Quart(__name__), allow_origin=["https://chat.openai.com", "http://localhost:3000"])
+app = quart_cors.cors(quart.Quart(__name__), allow_origin=["https://chat.openai.com", "http://localhost:3000", "https://developer.tbd.website"])
 
 @app.route("/help/<topic>", methods=['GET'])
 async def help_topic(topic):
