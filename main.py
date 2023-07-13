@@ -106,8 +106,8 @@ def ask_chat_route():
 def ask_chat(query):
     import openai
 
-    messages = [{"role": "system", "content": "You are a helpful web5 assistant that provides code examples and explanations. Code examples should be surrounded with markdown backticks to make presentation easy."},
-                {"role": "user", "content": query}]
+    messages = [{"role": "system", "content": "You are a helpful web5 assistant that provides code examples and explanations. Please don't invent APIs. Code examples should be surrounded with markdown backticks to make presentation easy."},
+                {"role": "user", "content": "Following is a question from the developer.tbd.website about web5: " + query}]
 
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo-0613",
@@ -143,7 +143,14 @@ def ask_chat(query):
             model="gpt-3.5-turbo-0613",
             messages=messages,
         )  # get a new response from GPT where it can see the function response
-        return second_response['choices'][0]['message']['content']  
+
+        second_response_message = second_response['choices'][0]['message']
+        if second_response_message.get("function_call"):
+            print("<-----> second function call desired (NOT IMPLEMENTED) " + str(second_response_message["function_call"]))
+            
+            
+
+        return second_response['choices'][0]['message']['content']   
     
     # by default we return nothing, as we don't want to let it hallcinate a response without web5 context. 
     return None  
