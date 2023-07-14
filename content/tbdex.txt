@@ -1,0 +1,16 @@
+TBDEX: A LIQUIDITY PROTOCOL including whitepaper
+
+-----
+
+Connecting the world of legacy money to the world of digital money
+The web connected us all. But money and payments have not kept pace.
+
+The legacy payments system is held together with proverbial duct tape that masks fundamental problems: final settlement of payments is slow, expensive, and never quite final. Risks get priced in as expensive account fees – or exclusion from the system itself. This hits the most economically disadvantaged the hardest.
+
+A decentralized and trustless system like Bitcoin shifts the paradigm to financial access. There are no credit checks or monthly account fees. Open, decentralized, and permissionless networks let you send money anywhere in the world, near instantly.
+
+So now we have both legacy payment systems and new payment systems. But how do we get from the old to the new? tbDEX bridges the worlds of legacy money and digital money.
+
+tbDEX is a decentralized, permissionless protocol. It opens the door to Self Sovereign Identity and access to the financial system for all. And because it abstracts away the complexity of decentralization, developers can focus on building great things.
+
+You can see the whitepaper here: https://tbdex.io/whitepaper.pdf
