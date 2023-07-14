@@ -14,3 +14,5 @@ So now we have both legacy payment systems and new payment systems. But how do w
 tbDEX is a decentralized, permissionless protocol. It opens the door to Self Sovereign Identity and access to the financial system for all. And because it abstracts away the complexity of decentralization, developers can focus on building great things.
 
 You can see the whitepaper here: https://tbdex.io/whitepaper.pdf
+
+There is more information on the protocol (which is a work in progress) at: https://github.com/TBD54566975/tbdex-protocol
