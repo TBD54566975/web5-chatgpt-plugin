@@ -6,7 +6,7 @@ WORKDIR /app
 COPY . /app
 
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir --user quart quart_cors PyYAML openai
+    pip install --no-cache-dir -r requirements.txt
 
 # Runtime stage
 FROM python:3.9-slim as runtime
@@ -18,7 +18,8 @@ COPY --from=build /app /app
 
 # Make sure scripts in .local are usable:
 ENV PATH=/root/.local/bin:$PATH
+ENV FLASK_ENV=production
 
 EXPOSE 5003
 
-CMD ["python", "/app/main.py"]
+CMD ["gunicorn", "-b", "0.0.0.0:5003", "main:app"]
