@@ -6,7 +6,7 @@ WORKDIR /app
 COPY . /app
 
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir --user Flask Flask_cors PyYAML openai gunicorn
 
 # Runtime stage
 FROM python:3.9-slim as runtime
@@ -22,4 +22,4 @@ ENV FLASK_ENV=production
 
 EXPOSE 5003
 
-CMD ["gunicorn", "-b", "0.0.0.0:5003", "main:app"]
+CMD ["python", "/app/main.py"]
