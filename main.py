@@ -164,8 +164,11 @@ def get_chat_functions():
 
 def main():
     debug_mode = os.environ.get('FLASK_ENV') != 'production'
-    app.run(debug=debug_mode, host="0.0.0.0", port=5003)
-
+    if debug_mode:
+        app.run(debug=debug_mode, host="0.0.0.0", port=5003)
+    else:
+        from waitress import serve
+        serve(app, host="0.0.0.0", port=5003)
 
 if __name__ == "__main__":
     main()

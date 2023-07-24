@@ -2,4 +2,4 @@ Flask>1.0
 Flask-cors
 PyYAML
 openai
-gunicorn
+waitress

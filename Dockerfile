@@ -6,7 +6,7 @@ WORKDIR /app
 COPY . /app
 
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir --user Flask Flask_cors PyYAML openai gunicorn
+    pip install --no-cache-dir --user Flask Flask_cors PyYAML openai waitress
 
 # Runtime stage
 FROM python:3.9-slim as runtime
