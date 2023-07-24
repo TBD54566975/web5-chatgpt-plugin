@@ -1,42 +1,40 @@
 import json
-import quart
-import quart_cors
-from quart import request
-import yaml
 import os
+import flask
+from flask import Flask, request, send_file, Response
+from flask_cors import CORS
+import yaml
+import openai
 
-
-app = quart_cors.cors(quart.Quart(__name__), allow_origin="*")
+app = Flask(__name__)
+CORS(app)  # Enables CORS for all routes
 
 @app.route("/help/<topic>", methods=['GET'])
-async def help_topic(topic):
+def help_topic(topic):
     try:
         with open(f'content/{topic}.txt', 'r') as file:
             content = file.read()
         explanation, code = content.split('-----', 1)
-        return quart.Response(response=json.dumps({"code": code.strip(), "explanation": explanation.strip()}), status=200)
+        return Response(response=json.dumps({"code": code.strip(), "explanation": explanation.strip()}), status=200, mimetype='application/json')
     except FileNotFoundError:
-        return quart.Response(response=json.dumps({"error": "Topic not found"}), status=404)
+        return Response(response=json.dumps({"error": "Topic not found"}), status=404, mimetype='application/json')
     except Exception as e:
-        return quart.Response(response=json.dumps({"error": str(e)}), status=500)
+        return Response(response=json.dumps({"error": str(e)}), status=500, mimetype='application/json')
 
 
-@app.get("/logo.png")
-async def plugin_logo():
+@app.route("/logo.png", methods=['GET'])
+def plugin_logo():
     filename = 'logo.png'
-    return await quart.send_file(filename, mimetype='image/png')
+    return send_file(filename, mimetype='image/png')
 
-@app.get("/.well-known/ai-plugin.json")
-async def plugin_manifest():
-    host = request.headers['Host']
+@app.route("/.well-known/ai-plugin.json", methods=['GET'])
+def plugin_manifest():
     with open("./.well-known/ai-plugin.json") as f:
         text = f.read()
-        return quart.Response(text, mimetype="text/json")
-
+        return Response(text, mimetype="application/json")
 
 @app.route("/openapi.yaml", methods=['GET'])
-async def openapi_spec():
-    host = request.headers['Host']
+def openapi_spec():
     base_openapi = {
         "openapi": "3.0.1",
         "info": {
@@ -91,21 +89,11 @@ async def openapi_spec():
                     }
                 }
 
-    return quart.Response(yaml.dump(base_openapi), mimetype="text/yaml")
-
+    return Response(yaml.dump(base_openapi), mimetype="text/yaml")
 
 @app.route("/ask_chat", methods=['GET'])
 def ask_chat_route():
     query = request.args.get('query')
-    resp = ask_chat(query)
-    if resp:
-        return quart.Response(response=resp, status=200) #quart.Response(response=json.dumps({"answer": resp}), status=200)
-    else:
-        return quart.Response(response="Unable to provide a relevant answer at this time.", status=500)
-
-def ask_chat(query):
-    import openai
-
     messages = [{"role": "system", "content": "You are a helpful web5 assistant that provides code examples and explanations. Please don't invent APIs. Code examples should be surrounded with markdown backticks to make presentation easy."},
                 {"role": "user", "content": "Following is a question from the developer.tbd.website about web5: " + query}]
 
@@ -113,48 +101,48 @@ def ask_chat(query):
         model="gpt-3.5-turbo-0613",
         messages=messages,
         functions=get_chat_functions(),
-        function_call="auto",  # auto is default, but we'll be explicit
+        function_call="auto",
     )
     response_message = response["choices"][0]["message"]
 
-    # check if GPT wanted to call a function
     if response_message.get("function_call"):
-
-        print("-----> GPT wants to call a function " + str(response_message["function_call"]))
-
         function_name = response_message["function_call"]["name"]
-
         with open(f'content/{function_name}.txt', 'r') as file:
             content = file.read()
         _, code = content.split('-----', 1)
-
         function_response = code
-
-        # send the info on the function call and function response to GPT
-        messages.append(response_message)  # extend conversation with assistant's reply
+        messages.append(response_message)
         messages.append(
             {
                 "role": "function",
                 "name": function_name,
                 "content": function_response,
             }
-        )  # extend conversation with function response
-        second_response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=messages,
-        )  # get a new response from GPT where it can see the function response
+        )
 
-        second_response_message = second_response['choices'][0]['message']
-        if second_response_message.get("function_call"):
-            print("<-----> second function call desired (NOT IMPLEMENTED) " + str(second_response_message["function_call"]))
-            
-            
 
-        return second_response['choices'][0]['message']['content']   
-    
-    # by default we return nothing, as we don't want to let it hallcinate a response without web5 context. 
-    return None  
+        def stream():
+            completion = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=messages,
+                stream=True
+            )
+            for line in completion:
+                chunk = line['choices'][0].get('delta', {}).get('content', '')
+                if chunk:                    
+                    if chunk.endswith("\n"):
+                        yield 'data: %s|CR|\n\n' % chunk.rstrip()                    
+                    else:
+                        yield 'data: %s\n\n' % chunk                    
 
+        
+        return flask.Response(stream(), mimetype='text/event-stream')        
+
+    else:
+        print("Unable to answer")
+        def stream():
+            yield "data: Unable to provide a relevant answer at this time.\n\n"
+        return flask.Response(stream(), mimetype='text/event-stream')        
 
 def get_chat_functions():
     functions = []    
@@ -175,9 +163,9 @@ def get_chat_functions():
     return functions
 
 def main():
-    #print(ask_chat("How do I resolve a DID using the web5 did api?"))
-    app.run(debug=True, host="0.0.0.0", port=5003)
-    
+    debug_mode = os.environ.get('FLASK_ENV') != 'production'
+    app.run(debug=debug_mode, host="0.0.0.0", port=5003)
+
 
 if __name__ == "__main__":
     main()

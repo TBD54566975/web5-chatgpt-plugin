@@ -1,4 +1,5 @@
-quart
-quart-cors
+Flask>1.0
+Flask-cors
 PyYAML
 openai
+gunicorn
