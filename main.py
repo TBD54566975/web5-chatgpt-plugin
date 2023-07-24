@@ -1,5 +1,6 @@
 import json
 import os
+import flask
 from flask import Flask, request, send_file, Response
 from flask_cors import CORS
 import yaml
@@ -125,17 +126,24 @@ def ask_chat(query):
                 "content": function_response,
             }
         )
-        second_response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=messages,
-        )
-        second_response_message = second_response['choices'][0]['message']
-        if second_response_message.get("function_call"):
-            print("<-----> second function call desired (NOT IMPLEMENTED) " + str(second_response_message["function_call"]))
 
-        return second_response['choices'][0]['message']['content']   
 
-    return None 
+        def stream():
+            completion = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=messages,
+                stream=True
+            )
+
+            completion = openai.Completion.create(engine="text-davinci-003", prompt="Hello world", )
+            for line in completion:
+                yield 'data: %s\n\n' % line.choices[0].text
+        
+        return flask.Response(stream(), mimetype='text/event-stream')        
+
+    else:
+
+        return None 
 
 def get_chat_functions():
     functions = []    
@@ -159,6 +167,6 @@ def main():
     debug_mode = os.environ.get('FLASK_ENV') != 'production'
     app.run(debug=debug_mode, host="0.0.0.0", port=5003)
 
-    
+
 if __name__ == "__main__":
     main()
