@@ -94,13 +94,6 @@ def openapi_spec():
 @app.route("/ask_chat", methods=['GET'])
 def ask_chat_route():
     query = request.args.get('query')
-    resp = ask_chat(query)
-    if resp:
-        return Response(response=resp, status=200)
-    else:
-        return Response(response="Unable to provide a relevant answer at this time.", status=500)
-
-def ask_chat(query):
     messages = [{"role": "system", "content": "You are a helpful web5 assistant that provides code examples and explanations. Please don't invent APIs. Code examples should be surrounded with markdown backticks to make presentation easy."},
                 {"role": "user", "content": "Following is a question from the developer.tbd.website about web5: " + query}]
 
@@ -134,16 +127,22 @@ def ask_chat(query):
                 messages=messages,
                 stream=True
             )
-
-            completion = openai.Completion.create(engine="text-davinci-003", prompt="Hello world", )
             for line in completion:
-                yield 'data: %s\n\n' % line.choices[0].text
+                chunk = line['choices'][0].get('delta', {}).get('content', '')
+                if chunk:                    
+                    if chunk.endswith("\n"):
+                        yield 'data: %s|CR|\n\n' % chunk.rstrip()                    
+                    else:
+                        yield 'data: %s\n\n' % chunk                    
+
         
         return flask.Response(stream(), mimetype='text/event-stream')        
 
     else:
-
-        return None 
+        print("Unable to answer")
+        def stream():
+            yield "data: Unable to provide a relevant answer at this time.\n\n"
+        return flask.Response(stream(), mimetype='text/event-stream')        
 
 def get_chat_functions():
     functions = []    
