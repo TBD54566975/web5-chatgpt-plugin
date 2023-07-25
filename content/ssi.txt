@@ -1,0 +1,7 @@
+Explains what SSI is
+
+-----
+
+Self Sovereign Identity (SSI)
+
+SSI refers to a concept where individuals have full control and ownership over their digital identities. It empowers individuals to manage and control their personal information without relying on centralized authorities or intermediaries. SSI enables individuals to store their pesonal data and identity in a secure and private manner. With self-sovereign identity, individuals can selectively share their personal information with others, granting access on a need-to-know basis all while maintaining privacy and control over their data.

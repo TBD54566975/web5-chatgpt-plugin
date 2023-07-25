@@ -1,0 +1,113 @@
+Self Sovereign Identity (SSI) Service API
+A web service that exposes the SSI SDK as an HTTP API. Explains how to run it and what it is.
+
+-----
+
+This project is available here: https://github.com/TBD54566975/ssi-service
+
+Api docs are here: https://developer.tbd.website/docs/apis/ssi-service
+
+The SSI Service facilitates all things relating to DIDs and Verifiable Credentials - in a box!
+
+Introduction
+The Self Sovereign Identity Service (SSIS) facilitates all things relating to DIDs and Verifiable Credentials - in a box! The service is a part of a larger Decentralized Web Platform architecture which you can learn more about in our collaboration repo.
+
+Steps to issue an Employment Status Credential:
+
+Spin up and host the SSI-Service
+Add the ability for your employees to click 'apply for a credential' on your internal EMS (should we show a front end button code example)
+Create an Issuer DID for your business
+Create a Schema
+Create a Credential Manifest
+Submit a Credential Application
+Configuration
+Managed via: TOML file
+
+There are sets of configuration values for the server (e.g. which port to listen on), the services (e.g. which database to use), and each service. Each service may define specific configuration, such as which DID methods are enabled for the DID service.
+
+Key Management
+SSI-service can store keys that are used to digitally sign credentials (and other data). All such keys are encrypted at the application before being stored using a MasterKey (a.k.a. a Key Encryption Key or KEK). The MasterKey can be generated automatically during boot time, or we can use the MasterKey housed in an external Key Management System (KMS) like GCP KMS or AWS KMS.
+
+For production deployments, using external KMS is strongly recommended.
+
+To use an external KMS:
+
+Create a symmetric encryption key in your KMS. You MUST select the algorithm that uses AES-256 block cipher in Galois/Counter Mode (GCM). At the time of writing, this is the only algorithm supported by AWS and GCP.
+Set the master_key_uri field of the [services.keystore] section using the format described in tink (we use the tink library under the hood).
+Set the kms_credentials_path field of the [services.keystore] section to point to your credentials file, according to this section.
+Win!
+To use a randomly generated encryption key (NOT RECOMMENDED FOR ANY PRODUCTION ENVIRONMENT):
+
+Make sure that master_key_uri and kms_credentials_path of the [services.keystore] section are not set.
+Note that at this time, we do not currently support rotating the master key.
+
+Steps for SSI-Service to consume its configuration:
+On startup: SSI-Service loads default values into the SSIServiceConfig
+Checks for a TOML config file:
+If exists...load toml file
+If does not exist...it uses a default config defined in the code inline
+Finally, it loads the config/.env file and adds the env variables defined in this file to the final SSIServiceConfig
+Authentication and Authorization
+The ssi server uses the Gin framework from Golang, which allows various kinds of middleware. Look in pkg/middleware/Authentication.go and pkg/middleware/Authorization.go for details on how you can wire up authentication and authorization for your use case.
+
+Pre-built images to use
+There are pre-build images built by github actions on each merge to the main branch, which you can access here: https://github.com/orgs/TBD54566975/packages?repo_name=ssi-service
+
+Build & Test
+This project uses mage, please view CONTRIBUTING for more information.
+
+After installing mage, you can build and test the SDK with the following commands:
+
+mage build
+mage test
+A utility is provided to run clean, build, lint, and test in sequence with:
+
+mage cblt
+Deployment
+The service is packaged as a Docker container, runnable in a wide variety of environments.
+
+Docker Compose is used for simplification and orchestration. To run the service, you can use the following command, which will start the service on port 8080:
+
+mage run
+Or, you can run docker-compose yourself, building from source:
+
+cd build && docker-compose up --build
+To use the pre-published images:
+
+cd build && docker-compose up -d
+Health and Readiness Checks
+Note: port 3000 is used by default, specified in config.toml, for the SSI Service process. If you're running via mage run or docker compose, the port to access will be 8080.
+
+Run for health check (status: OK, then you are up):
+
+ ~ curl localhost:3000/health
+{"status":"OK"}
+Run to check if all services are up and ready (credential, did, and schema):
+
+~ curl localhost:8080/readiness
+{
+    "status": {
+        "status": "ready",
+        "message": "all service ready"
+    },
+    "serviceStatuses": {
+        "credential": {
+            "status": "ready"
+        },
+        "did": {
+            "status": "ready"
+        },
+        "schema": {
+            "status": "ready"
+        }
+    }
+}
+Continuous Integration
+CI is managed via GitHub Actions. Actions are triggered to run for each Pull Request, and on merge to main. You can run CI locally using a tool like act.
+
+API Documentation
+You can find all HTTP endpoints by checking out the swagger docs at: http://localhost:8080/swagger/index.html
+
+Note: Your port may differ; swagger docs are hosted on the same endpoint as the ssi service itself.
+
+Please join Discord, or open an issue if you are interested in helping shape the future of the project.
