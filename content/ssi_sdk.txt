@@ -1,0 +1,72 @@
+Explains what ssi-sdk by TBD in golang is for 
+
+-----
+
+Introduction
+Named ssi-sdk, this SDK encapsulates a set of standards related to Self Sovereign Identity. The ssi-sdk intends to provide flexible functionality based on a set of standards-based primitives for building decentralized identity applications in a modular manner: with limited dependencies between components.
+
+ssi-sdk
+
+The image above outlines the SDK's vision. Standards may be added and/or removed. The standards themselves are under active development, and as such, are subject to change. When possible we aim to call out which versions or revisions of standards we are building implementations against.
+
+The SDK has not undergone any formal security review or audit, so please use with caution.
+
+For more information, see the vision document.
+
+Contributing
+This project is fully open source, and we welcome contributions! For more information please see CONTRIBUTING. Our current thinking about the development of the library is captured in GitHub Issues.
+
+Specifications
+Here are a set of references to specifications that this library currently supports. It is a dynamic set that will change as the library evolves.
+
+Decentralized Identifiers (DIDs) v1.0 W3C Proposed Recommendation 03 August 2021
+Verifiable Credentials Data Model v1.1 W3C Recommendation 09 November 2021
+Supports Linked Data Proof formats.
+Supports VC-JWT and VP-JWT formats.
+Verifiable Credentials JSON Schema Specification Draft Community Group Report, 21 September 2021
+Presentation Exchange 2.0.0 Working Group Draft, March 2022
+Wallet Rendering Strawman, June 2022
+Credential Manifest Strawman, June 2022
+Status List 2021 Draft Community Group Report 04 April 2022
+Signing Methods
+Data Integrity 1.0 Draft Community Group Report
+Linked Data Cryptographic Suite Registry Draft Community Group Report 29 December 2020
+JSON Web Signature 2020 Draft Community Group Report 09 February 2022
+VC Proof Formats Test Suite, VC Data Model with JSON Web Signatures Unofficial Draft 09 March 2022 This implementation's compliance with the JWS Test Suite can be found here.
+Supports both JWT and Linked Data proof formats with JOSE compliance.
+Key Types & Signature Algorithms
+Key Type	Signature Algorithm	Supported
+Ed25519	EdDSA	Yes
+secp256k1	ES256K	Yes
+P-256	ES256	Yes
+P-384	ES384	Yes
+P-521	ES512	Yes
+RSA	PS256	Yes
+BLS	BBS+	Experimental
+Dilithium Mode 2	CRYDI2	Experimental
+Dilithium Mode 3	CRYDI3	Experimental
+Dilithium Mode 5	CRYDI5	Experimental
+Experimental methods must be explicitly enabled. For an example, see this test.
+
+DID Methods
+The did:key Method v0.7 Unofficial Draft 14 February 2022
+The did:web Method 20 December 2021
+The did:peer Method W3C Document 12 October 2021
+The did:pkh Method Draft, 22 August 2022
+The did:jwk Method 13 April 2022
+Building
+This project uses mage, please view CONTRIBUTING for more information.
+
+After installing mage, you can build and test the SDK with the following commands:
+
+mage build
+mage test
+A utility is provided to run clean, build, and test in sequence with:
+
+mage cbt
+WASM
+The ssi-sdk-wasm is a library that provides a WebAssembly (WASM) implementation for Self-Sovereign Identity (SSI) SDK. It enables SSI functionality in the browser and other JavaScript environments by compiling the SDK to a WASM file. This repository is responsible for building the main.wasm file and making it available as an npm package.
+
+The wasm implemetation for this repo lives here - https://github.com/TBD54566975/ssi-sdk-wasm
+
+
