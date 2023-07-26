@@ -1,4 +1,4 @@
-Explains what the dwn class does
+Explains what the dwn class does and how you can configure the DWN from web5 js code
 
 -----
 
@@ -9,3 +9,15 @@ Properties:
 
 records
 protocols
+
+
+const { web5, did } = await Web5.connect();
+
+// this will set a DWN server of your choosing. By default it comes with some bootstrap nodes. 
+
+const { web5, did: myDid } = await Web5.connect({
+  techPreview: {
+    dwnEndpoints: ["https://dwn.your-domain.org/"],
+  },
+});
+

@@ -1,4 +1,4 @@
-Explains the did API
+Explains the did API for web5
 
 -----
 

@@ -95,7 +95,9 @@ def openapi_spec():
 def ask_chat_route():
     query = request.args.get('query')
     messages = [{"role": "system", "content": "You are a helpful web5 assistant that provides code examples and explanations. Please don't invent APIs. Code examples should be surrounded with markdown backticks to make presentation easy."},
-                {"role": "user", "content": "Following is a question from the developer.tbd.website about web5: " + query}]
+               {"role": "user", "content": "Please don't hallucinate responses if you don't know what the API is, stick to the content you know. Also remember code examples should be surrounded with markdown backticks to make presentation easy."},
+               {"role": "assistant", "content": "Got it."},
+               {"role": "user", "content": "Following is a question from the developer.tbd.website about web5: " + query}]
 
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo-0613",
