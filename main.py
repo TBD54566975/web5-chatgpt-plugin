@@ -127,11 +127,19 @@ def ask_chat_route():
 
     # build up knowledge base
     knowledge = ''
+
     for item in csv_list:
-        with open(f'content/{item.strip()}.txt', 'r') as file:
-            content = file.read()
+        try:
+            with open(f'content/{item.strip()}.txt', 'r') as file:
+                content = file.read()
+        except FileNotFoundError:
+            print(f"No file found for {item.strip()}")
+            knowledge = ''
+            break
+
         _, code = content.split('-----', 1)
-        knowledge = knowledge + item + ":\n\n" + code + '\n\n'
+        knowledge += f"{item}:\n\n{code}\n\n"
+
     
 
     messages = [{"role": "system", "content": "You are a helpful assistant that provides code examples and explanations when context is provided. Please don't invent APIs. Code examples should be surrounded with markdown backticks to make presentation easy."},
@@ -143,6 +151,9 @@ def ask_chat_route():
 
 
     def stream():
+        if knowledge == '':
+            yield 'data: Sorry, I don\'t know about that topic. Please try again.\n\n'
+            return
         completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=messages,

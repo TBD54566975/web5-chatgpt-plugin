@@ -1,4 +1,4 @@
-Build a ToDo App (and end to end example)
+Build a ToDo App (and end to end example) with web5.js, can be used as an example to be inspired by.
 
 -----
 
