@@ -1,4 +1,4 @@
-To get going quickly, follow these instructions to setup a node.js javascript project that uses web5 and shows a range of actions.
+To get going quickly with web5.js, follow these instructions to setup a node.js javascript project that uses web5 and shows a range of actions.
 
 -----
 

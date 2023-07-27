@@ -1,4 +1,4 @@
-Explains what SSI is
+Explains what SSI is, as a concept
 
 -----
 

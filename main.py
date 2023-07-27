@@ -91,60 +91,74 @@ def openapi_spec():
 
     return Response(yaml.dump(base_openapi), mimetype="text/yaml")
 
+
+
+
 @app.route("/ask_chat", methods=['GET'])
 def ask_chat_route():
-    query = request.args.get('query')
-    messages = [{"role": "system", "content": "You are a helpful web5 assistant that provides code examples and explanations. Please don't invent APIs. Code examples should be surrounded with markdown backticks to make presentation easy."},
-               {"role": "user", "content": "Please don't hallucinate responses if you don't know what the API is, stick to the content you know. Also remember code examples should be surrounded with markdown backticks to make presentation easy."},
+    query = request.args.get('query')    
+    
+    messages = [{"role": "system", "content": "you are a helpful assistant to find the best names that match what knowledge is being asked for. Return only a list of matching names as requested."},
+               {"role": "user", "content": "I will provide you lists of json objects which map a name of a piece of knowledge to a description. You then take a question from the website developer.tbd.website and return a list of names that best the question, 2 to 3 ideally."},
                {"role": "assistant", "content": "Got it."},
-               {"role": "user", "content": "Following is a question from the developer.tbd.website about web5: " + query}]
+               {"role": "user", "content": "[{'name': 'frog_eyes', 'description': 'describes the nature of frog eyes'], {'name': 'cat_hair', 'description': 'learn about cat hair here. See cats for more detail.'], {'name': 'cats', 'description': 'some base knowledge about cats']"},
+               {"role": "assistant", "content": "What is your question?"},
+               {"role": "user", "content": "what do I do about too much cat hair?"},
+               {"role": "assistant", "content": "cats,cat_hair"},
+               {"role": "user", "content": "ok good. Now I will provide you with some JSON again to do it with that new data set."},
+               {"role": "assistant", "content": "Got it."},
+               {"role" : "user",  "content" : str(get_chat_functions())},
+               {"role": "assistant", "content": "What is your question?"},
+               {"role": "user", "content": query},
+               ]
 
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-0613",
+        model="gpt-4",
         messages=messages,
-        functions=get_chat_functions(),
-        function_call="auto",
     )
-    response_message = response["choices"][0]["message"]
 
-    if response_message.get("function_call"):
-        function_name = response_message["function_call"]["name"]
-        with open(f'content/{function_name}.txt', 'r') as file:
+    
+    response_message = response["choices"][0]["message"]
+    csv_list = response_message['content']
+    print("csv_list", csv_list)
+    
+
+    csv_list = csv_list.split(',')
+
+    # build up knowledge base
+    knowledge = ''
+    for item in csv_list:
+        with open(f'content/{item.strip()}.txt', 'r') as file:
             content = file.read()
         _, code = content.split('-----', 1)
-        function_response = code
-        messages.append(response_message)
-        messages.append(
-            {
-                "role": "function",
-                "name": function_name,
-                "content": function_response,
-            }
+        knowledge = knowledge + item + ":\n\n" + code + '\n\n'
+    
+
+    messages = [{"role": "system", "content": "You are a helpful assistant that provides code examples and explanations when context is provided. Please don't invent APIs. Code examples should be surrounded with markdown backticks to make presentation easy."},
+            {"role": "user", "content": "Please don't hallucinate responses if you don't know what the API is, stick to the content you know. Also remember code examples should be surrounded with markdown backticks to make presentation easy."},
+            {"role": "assistant", "content": "Got it."},
+            {"role": "user", "content": "Context:\n " +  knowledge},
+            {"role": "assistant", "content": "OK, what is your question?"},
+            {"role": "user", "content": "Following is a question from the developer.tbd.website: " + query}]
+
+
+    def stream():
+        completion = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            stream=True
         )
-
-
-        def stream():
-            completion = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=messages,
-                stream=True
-            )
-            for line in completion:
-                chunk = line['choices'][0].get('delta', {}).get('content', '')
-                if chunk:                    
-                    if chunk.endswith("\n"):
-                        yield 'data: %s|CR|\n\n' % chunk.rstrip()                    
-                    else:
-                        yield 'data: %s\n\n' % chunk                    
+        for line in completion:
+            chunk = line['choices'][0].get('delta', {}).get('content', '')
+            if chunk:                    
+                if chunk.endswith("\n"):
+                    yield 'data: %s|CR|\n\n' % chunk.rstrip()                    
+                else:
+                    yield 'data: %s\n\n' % chunk                    
 
         
-        return flask.Response(stream(), mimetype='text/event-stream')        
+    return flask.Response(stream(), mimetype='text/event-stream')        
 
-    else:
-        print("Unable to answer")
-        def stream():
-            yield "data: Unable to provide a relevant answer at this time.\n\n"
-        return flask.Response(stream(), mimetype='text/event-stream')        
 
 def get_chat_functions():
     functions = []    
@@ -155,11 +169,7 @@ def get_chat_functions():
                 explanation, _ = file.read().split('-----', 1)
                 functions.append({
                     "name": f"{topic}",
-                    "description": explanation.strip(),
-                    "parameters": {
-                        "type": "object",
-                        "properties": {},
-                    },
+                    "description": explanation.strip()
                 })
     
     return functions
@@ -173,4 +183,5 @@ def main():
         serve(app, host="0.0.0.0", port=5003)
 
 if __name__ == "__main__":
+    #ask_chat_route()
     main()

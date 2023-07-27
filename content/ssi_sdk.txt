@@ -1,4 +1,4 @@
-Explains what ssi-sdk by TBD in golang is for 
+Explains what ssi-sdk by TBD in golang is for. This is separate to web5.js. 
 
 -----
 

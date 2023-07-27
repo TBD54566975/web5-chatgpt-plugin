@@ -12,13 +12,4 @@ Shows how to use web5 in a html page script tag, loading from a CDN.
 
     // you can then use the web5 api from here.
 
-    const { record } = await web5.dwn.records.write({
-        data: "Hello Web5",
-        message: {
-            dataFormat: 'text/plain',
-        },
-    });    
-
-</script>  
-
 See the api docs for more information: https://developer.tbd.website/api/web5-js
