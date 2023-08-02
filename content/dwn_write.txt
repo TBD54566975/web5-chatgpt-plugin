@@ -1,4 +1,4 @@
-Show how to write to Decentralized Web Nodes.
+Show how to write to Decentralized Web Nodes (DWN).
 
 -----
 
@@ -6,7 +6,6 @@ Show how to write to Decentralized Web Nodes.
 // The following snippet allows you to create a record in your Web5 instance’s DWN using a DID object called myDid:
 
 // Create a plain text record in the in-memory DWN
-
 const { record } = await web5.dwn.records.create({
     data: "Hello Web5",
     message: {
@@ -16,5 +15,5 @@ const { record } = await web5.dwn.records.create({
 
 The create request must contain the following:
 
-message - object: The properties of the DWeb Node Message Descriptor that will be used to construct a valid DWeb Node message. schema, is an optional parameter, and if used it does not need to be a resolvable url. dataFormat should conform to one of the IANA media types.
-data - blob | stream | file: The data object of the bytes to be sent.
+message - object: The properties of the DWN Message Descriptor that will be used to construct a valid DWN message. schema, is an optional parameter, and if used it does not need to be a resolvable url. dataFormat should conform to one of the IANA media types.
+data - string | json | blob | stream | file: The data object of the bytes to be sent.

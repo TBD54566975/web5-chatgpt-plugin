@@ -1,4 +1,4 @@
-Create a record in Alice's DWN, and send it directly to Bobs DWeb Nodes.
+Create a record in one DWN, and send it directly to another user's DWeb Nodes.
 
 -----
 

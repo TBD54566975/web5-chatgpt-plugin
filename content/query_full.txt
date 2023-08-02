@@ -1,4 +1,4 @@
-Query from your DWN or remote DWeb nodes. Uses protocol as filter criteria but can also use a 'schema' field instead of protocol (which is a jsonschema)
+Query protocols from your DWN or remote DWeb nodes. Uses protocol as filter criteria but can also use a 'schema' field instead of protocol (which is a jsonschema)
 
 -----
 
