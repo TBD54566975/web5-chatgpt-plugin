@@ -1,0 +1,98 @@
+This is an example of a single html file which contains a web5 app, shows how the did is created and then the DWN is synced.
+
+-----
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The most basic Web5 app you can imagine</title>
+      
+  </head>
+  <body>
+    <p>This page automatically creates an unanchored ION DID and DWN instance. The storage is in IndexedDB. If you come back to this page later then<br>
+      your DID and data in your DWN storage will be used, rather than a new DID being created. <br>
+      Your DID will have 3 DWNs - the one created in your browser (the DWN instance + IndexedDB storage) and another 2 remote DWNs<br>
+      that will all sync every 2 minutes. Copy and paste your DID into https://identity.foundation/ion/explorer to see these other two DWNs</p><br>
+    <div>
+    Click to see your DID<br>
+    <button id=seeDid>See DID</button>
+    <p id=yourDid></p>
+    </div>
+    <div>Create a message to your DWN (this will also write to the remote DWNs listed in your DID document)<br>
+      <input type="text" id="text"></input>
+      <button id=createMessage>Create Message</button>
+      <p id="messtext"></p>
+    </div>   
+    <hr>
+    <div>Query all messages written to your DWN<br>
+      <button id=queryButton>Query DWN</button>
+      <p id="queryResult"></p>
+    </div>   
+    <hr>
+    <div>Read data from a particular record<br>
+      Enter recordId (use query button above to find all those written to your browser DWN)<br>
+      <input type="text" id="recordId"></input><br>
+      <button id=readButton>Read</button>
+      <p id="readResult"></p>
+    </div>   
+    <script type="module"> 
+     
+    import { Web5 } from 'https://cdn.jsdelivr.net/npm/@tbd54566975/web5@0.7.11/dist/browser.mjs';
+    const { web5, did: myDid } = await Web5.connect();
+        
+
+
+let seeDid = document.getElementById('seeDid');
+let createButton = document.getElementById('createMessage');
+let queryButton = document.getElementById('queryButton');
+let readButton = document.getElementById('readButton');
+
+seeDid.addEventListener('click', function(){
+  
+  document.getElementById('yourDid').innerHTML = myDid
+})
+
+createButton.addEventListener('click', async function () {
+  let messagetext = document.getElementById('text').value;
+  const { record } = await web5.dwn.records.create({
+    data: messagetext,
+    message: {
+      dataFormat: 'text/plain',
+    },
+  });
+  console.log(record.data.text())
+  document.getElementById('messtext').innerHTML = record;
+});
+
+queryButton.addEventListener('click', async function () {
+    document.getElementById('queryResult').innerHTML = "";
+  document.getElementById('queryResult').innerHTML = "Your recordIds are:  "
+  let queryResult = await web5.dwn.records.query({
+    message: {
+      filter: {
+        dataFormat: 'text/plain',
+      },
+    },
+  });
+    queryResult.records.forEach(element => {
+    
+    document.getElementById('queryResult').innerHTML += "<br>" + element.id });
+    
+});
+
+readButton.addEventListener('click', async function () {
+  let libRecordId = document.getElementById('recordId').value;
+  const { record }  =  await web5.dwn.records.read({
+    message: {
+      recordId: libRecordId
+    }
+  });
+  const readResult = await record.data.text()
+  document.getElementById('readResult').innerHTML = readResult
+});
+  </script>
+  </body>
+  
+</html>
