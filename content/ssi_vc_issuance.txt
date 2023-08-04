@@ -1,4 +1,4 @@
-Explains how to use the ssi-service to do VC issuance, with a simple example app
+Explains how to use the ssi-service issue verifiable certificates (VC issuance), with a simple example app issuing and also validating credentials
 
 -----
 
