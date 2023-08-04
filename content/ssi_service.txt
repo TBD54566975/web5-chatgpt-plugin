@@ -1,4 +1,5 @@
-Self Sovereign Identity (SSI) Service API
+Self Sovereign Identity (SSI) Service API (notes from readme)
+
 A web service that exposes the SSI SDK as an HTTP API. Explains how to run it and what it is. This is distinct to web5.js.
 
 -----
