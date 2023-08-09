@@ -1,4 +1,4 @@
-Explains how sync works with DWeb Nodes (DWNs) and web5
+Explains how to sync data across multiple DWeb Nodes (DWNs) in Web5
 
 -----
 

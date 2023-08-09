@@ -1,9 +1,9 @@
-Method for querying the DWeb Node of a provided target DID. 
+Method for querying the DWN for records of a provided target DID. 
 -----
 
 // The query request can contain the following:
 // from - string: The DID of the DWN the query will fetch results from.
-// message - object: The properties of the DWeb Node Message Descriptor that will be used to construct a valid DWeb Node message.
+// message - object: The properties of the DWN Message Descriptor that will be used to construct a valid DWeb Node message.
 
 
 const response = await web5.dwn.records.query({
@@ -16,4 +16,5 @@ const response = await web5.dwn.records.query({
   }
 });
 
-console.log(response.entries) // logs array of Record class instances
+// logs array of Record class instances
+console.log(response.entries) 
