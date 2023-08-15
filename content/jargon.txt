@@ -1,0 +1,8 @@
+Explanations of PFI, KYC, payin and payout
+
+-----
+
+* PFI -> Partipating Financial Institution: typically this is some kind of company that allows you to obtain a specified currency in a specified country (eg pesos as cash). 
+* KYC -> Know Your Customer: requirements that financial institutions know who their customer is for legal and compliance reasons.
+* payin -> a method or technology used for the originator of a transaction to transmit funds.
+* payout -> a method used by the recipient of funds to receive them.

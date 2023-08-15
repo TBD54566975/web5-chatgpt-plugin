@@ -1,0 +1,279 @@
+Explains how to use the ssi-service issue verifiable certificates (VC issuance), with a simple example app issuing and also validating credentials
+
+-----
+
+This tutorial introduces credential issuing and usage in the simplest possible way.  
+
+# First time setup
+
+1) lets create a did for our issuance service, this will be who the end users end up trusting.
+
+```bash
+curl -X PUT localhost:8080/v1/dids/key -d '{"keyType": "Ed25519"}'
+```
+
+This gives the issuance service a DID to shout to the world, tell all your friends about it. The service keeps the private key that control the DID in its own secure storage, you never directly access it. 
+
+From the response, take note of the `id` and the `verificationMethod[0].id` as you will need these later. You can return the list of DIDs at any time via the `http://localhost:8080/v1/dids/key` endpoint should you need them.
+
+2) Setup a schema for the credential we want to issue from our service:
+
+```bash
+curl -X PUT localhost:8080/v1/schemas -d '{
+  "name": "Person Credential",
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "credentialSubject": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string"
+         },
+          "lastName": {
+            "type": "string"
+         }
+        },
+        "required": ["firstName", "lastName"]
+      }
+    }
+  }
+}'
+```
+
+From the response, take note of the credential id for the next step.
+
+## Issue a credential
+
+To issue a credential, follow the following pattern:
+
+```bash
+curl -X PUT localhost:8080/v1/credentials -d '{
+  "issuer": "did id from step 1",
+  "verificationMethodId": "the first verification method id from step 1",
+  "subject": "the user you want to issue this to - this can be anyone",
+  "schemaId": "the schema id from step 2",
+  "data": {
+    "firstName": "Satoshi",
+    "lastName": "Nakamoto"
+  }
+}'
+```
+
+You then get a bunch of stuff back, `credentialJwt` is the actual credential, take note of that blob of text.
+
+## How to use this credential
+
+Now you have a credential issued to a person (a holder), how does that person use that credential?
+
+They present the `credentialsJwt` to any service or app that can accept it, to prove they have the qualification. If that service trusts our issuer, then they can trust they have that qualification, and it is easy and instant to check. This is sometimes called the <a href="https://en.wikipedia.org/wiki/File:VC_triangle_of_Trust.svg">"triangle of trust"</a>. 
+
+### Validating a credential
+
+Checking a credential can be done using the DIF's libraries in javascript:
+
+Run `npm install did-jwt-vc did-resolver key-did-resolver` in an npm project to get the libraries and then an app can verify the credentialsJwt anywhere like this:
+
+```js
+import { verifyCredential } from 'did-jwt-vc'
+import { Resolver } from 'did-resolver'
+import { getResolver } from 'key-did-resolver'
+
+
+const vcJwt = // USE credentialJwt from above
+const verifiedVC = await verifyCredential(vcJwt, new Resolver(getResolver()))
+
+
+console.log("Credentials are:", verifiedVC.verifiableCredential.credentialSubject)
+console.log("Issued by: ", verifiedVC.issuer)
+```
+
+You will then see output like: 
+
+```bash
+Credentials are: {
+  firstName: 'Satoshi',
+  lastName: 'Nakamoto',
+  id: 'did:web:skounis.github.io'
+}
+Issued by:  did:key:z6MkrQnbif9ixqr2ywzxkyejX37eP1UHfr1zicyqceLa2VpK
+```
+
+Note that this shows that the credential is in tact and valid. However, it is up to the verifier to determine if they trust the issuer DID. That is the link between the "verifier" and "issuer" in the triangle of trust. You can establish this trust ahead of time - to know in the future you can trust any credentials they issue. 
+
+There is a lot more in that `verifiedVC` object, such as URLs to check for revocation and more, but this is the heart of it.
+
+
+
+# Example: A Credit Score service
+
+We have a sketchy credit scoring bureau called MoeX. MoeX will issue, for free, a VC that contains a users credit score and they can share this VC freely with anyone. 
+
+This will be a web app which takes a users DID, and their name, and then returns a VC which contains their credit score. 
+
+## Designing a schema
+
+MoeX has 2 items in its credit credential: Overall Score and Number of Defaults. This credential is only good for 30 days, but otherwise isn't revoked.
+
+```sh
+curl -X PUT localhost:8080/v1/schemas -d '{
+  "name": "Credit Score Credential",
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "credentialSubject": {
+        "type": "object",
+        "properties": {
+          "creditScore": {
+            "type": "integer"
+         },
+          "numOfDefaults": {
+            "type": "integer"
+         }
+        },
+        "required": ["creditScore"]
+      }
+    }
+  }
+}'
+```
+
+From the response, take note of the schema id, we will need it later.
+
+TIP: you can probably make a better schema that doesn't disclose the customers exact credit score but just a band if you like.
+
+## Implementing issuance service
+
+We will implement this as a simple web app that sits in front of our ssi-service that we set up above. The ssi-service is a utility you can use to manage your DIDs and VCs that you are issuing, but you don't have to expose it to the internet. 
+
+To implement an issuance service create a new nodejs project and install the dependencies:  
+
+```sh
+npm install express axios 
+```
+
+and put this in `index.mjs`: 
+
+```javascript!
+import express from 'express';
+import axios from 'axios';
+
+const app = express();
+const port = 3000;
+
+app.use(express.json());
+
+// Function to check did
+const checkDid = (did) => {
+  // implement logic to ensure we trust the person asking for the VC
+  return true;
+}
+
+// Function to check name
+const checkName = (name) => {
+  // Generate a random integer score
+  const score = Math.floor(Math.random() * 101);
+  return score;
+}
+
+app.get('/issue', async (req, res) => {
+  try {
+    const { did, name } = req.query;
+    const didIsValid = checkDid(did);
+    const score = checkName(name);
+
+    if (didIsValid) {
+      const response = await axios.put('http://localhost:8080/v1/credentials', {
+        issuer: "did:key:z6MkuZa1GTmxiPSZrvdKZZ2cPx8d1EZrv2Vb5WpgtWRdaw4C",
+        verificationMethodId: "did:key:z6MkuZa1GTmxiPSZrvdKZZ2cPx8d1EZrv2Vb5WpgtWRdaw4C#z6MkuZa1GTmxiPSZrvdKZZ2cPx8d1EZrv2Vb5WpgtWRdaw4C",
+        subject: did,
+        schemaId: "da43f310-dd2f-4e26-b571-840a93ec4071",
+        data: {
+          creditScore: score
+        }
+      },
+      );
+
+      res.json(response.data);
+    } else {
+      res.status(400).send('Invalid did');
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('There was an error processing your request');
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running at http://localhost:${port}`);
+});
+```
+
+Change the issuer value to the DID of the issuance server from the first setup step. The key is verificationMethod id. If you don't have it handy, you can use the `/v1/credentials` endpoint to fetch them as a list.
+
+Also update the credential schema to the id returned in the step above.
+
+Now run it with `node index.mjs`, and open a browser to `localhost:3000`. 
+
+
+### Getting credential from issuance service
+
+Accessing the url `localhost:3000/issue?name=mic&did=did:web:mic.com` will return a credential. Take note of the `credentialJwt` field for testing.
+
+That's it! Mic has his credential ready to use. 
+
+### Using the credential
+
+Now Mic has his credit score in his hot little hand (wallet) and wants to use it. 
+
+The easiest way is for him to present that as proof of his credit worthiness to a financial institution as the credentialJwt string along with any other data needed.
+
+The financial instituion could then verify Mic's credit with the following (using JavaScript for ease, but there are libraries in all languages to do this): 
+
+1) Make a new folder and run `npm install did-jwt-vc did-resolver key-did-resolver`
+
+2) Then put this in check_cred.mjs: 
+
+```js
+import { verifyCredential } from 'did-jwt-vc'
+import { Resolver } from 'did-resolver'
+import { getResolver } from 'key-did-resolver'
+
+
+// Mic's credit score credential
+const vcJwt = "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa3VaYTFHVG14aVBTWnJ2ZEtaWjJjUHg4ZDFFWnJ2MlZiNVdwZ3RXUmRhdzRDI3o2TWt1WmExR1RteGlQU1pydmRLWloyY1B4OGQxRVpydjJWYjVXcGd0V1JkYXc0QyIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTM2MzU2MjYsImlhdCI6MTY5MTA0MzYyNiwiaXNzIjoiZGlkOmtleTp6Nk1rdVphMUdUbXhpUFNacnZkS1paMmNQeDhkMUVacnYyVmI1V3BndFdSZGF3NEMiLCJqdGkiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvdjEvY3JlZGVudGlhbHMvMDQzYjZkYzMtNjYzZC00NmRiLWFmOWQtMTgzYmUwMjVhY2NjIiwibmJmIjoxNjkxMDQzNjI2LCJub25jZSI6IjM3MzUyMmE0LTM1NTYtNDIwOS04NzdlLTM1OTdjYTFjZjk2MyIsInN1YiI6ImRpZDp3ZWI6bWljLmNvbSIsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIl0sInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiXSwiY3JlZGVudGlhbFN1YmplY3QiOnsiY3JlZGl0U2NvcmUiOjJ9LCJjcmVkZW50aWFsU2NoZW1hIjp7ImlkIjoiZGE0M2YzMTAtZGQyZi00ZTI2LWI1NzEtODQwYTkzZWM0MDcxIiwidHlwZSI6Ikpzb25TY2hlbWEyMDIzIn19fQ.t41Vlrw0e0tMZ8U7DtNO7_Jf95eg8bcI_sst8pkJHejUB4CceijCV03ZNGFSGDRXb_VqtLXVchAMiykEax2qCw"
+
+// Verify the credential
+const verifiedVC = await verifyCredential(vcJwt, new Resolver(getResolver()))
+
+if (!verifiedVC.verified) {
+  console.log("VC is not verified")  
+}
+
+console.log("Financial institution to check it trusts this issuer: " + verifiedVC.issuer)
+
+if (verifiedVC.verifiableCredential.credentialSubject.creditScore < 50) {
+    console.log("Credit denied: Too sketchy");
+} else {
+    console.log("Credit Approved")
+}
+
+console.log("Credentials are:", verifiedVC.verifiableCredential.credentialSubject)
+
+
+```
+
+3. Run `node check_cred.mjs` and check the results:
+
+```
+Financial institution to check it trusts this issuer: did:key:z6MkuZa1GTmxiPSZrvdKZZ2cPx8d1EZrv2Vb5WpgtWRdaw4C
+Credit Approved
+Credentials are: { creditScore: 76, id: 'did:web:mic.com' }
+Issued by:  did:key:z6MkuZa1GTmxiPSZrvdKZZ2cPx8d1EZrv2Vb5WpgtWRdaw4C
+```
+
+This shows that the credential is in tact and issued by a an issuer that the financial institution trusts. It also will expire automatically after 30 days. 
+
+This just skims across the top of what VC issuance can be, as well as presenting credentials, the ssi-service utilities, and more. 
