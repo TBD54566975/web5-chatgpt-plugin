@@ -1,0 +1,61 @@
+Explains the difference between a signed and unsigned credential schema
+
+-----
+
+The SSI Service exposes a set of APIs for managing schemas. To create a schema you have two options: signed or unsigned. 
+
+The signed version of a schema is packaged as a VC. In some cases, it's useful to package a JSON Schema as a VC to retain information about authorship (who created the schema), when it was created, and enable other features the VC Data Model offers, such as the ability to suspend the usage of a schema.
+
+An unsigned schema consists of the JSON schema without the VC fields.
+
+Example of an unsigned schema:
+
+```json
+curl -X PUT localhost:8080/v1/schemas -d '{
+  "name": "Email Credential",
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "credentialSubject": {
+        "type": "object",
+        "properties": {
+          "emailAddress": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": ["emailAddress"]
+      }
+    }
+  }
+}'
+```
+
+Example of signed schema:
+
+```json
+curl -X PUT localhost:8080/v1/schemas -d '{
+  "name": "Email Credential",
+  "issuer": "did:key:z6MkjePG6UBCLbrgUQgURoTSuXAbRpDbCdTLEPUXDqUC4EFw",
+  "verificationMethodId": "did:key:z6MkjePG6UBCLbrgUQgURoTSuXAbRpDbCdTLEPUXDqUC4EFw#z6MkjePG6UBCLbrgUQgURoTSuXAbRpDbCdTLEPUXDqUC4EFw",
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "credentialSubject": {
+        "type": "object",
+        "properties": {
+          "emailAddress": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": ["emailAddress"]
+      }
+    }
+  }
+}'
+```
+
+Notice the signed VC contains `issuer` and `verificationMethodId` properties.

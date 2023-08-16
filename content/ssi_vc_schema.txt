@@ -1,0 +1,51 @@
+How to create a credential schema with SSI Service
+
+-----
+
+A Credential Schema is a document that defines the structure of a Verifiable Credential (VC). It's based on JSON Schema and specifies which properties the issuer will use to create the VC.
+
+1. Construct the JSON Schema and specify if any of the properties are required. Here's an example of a VC Schema for an email address
+
+```json
+{
+  "$id": "https://example.com/schemas/email.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "Email Address",
+  "type": "object",
+  "properties": {
+    "emailAddress": {
+      "type": "string",
+      "format": "email"
+    }
+  },
+  "required": ["emailAddress"]
+}
+```
+
+The $id keyword identifies a schema resource with its canonical URI. Note that this URI is an identifier and not necessarily a network locator. In the case of a network-addressable URL, a schema does not need to be downloadable from its canonical URI.
+
+2. Create Credential Schema
+
+To apply a JSON Schema to a Verifiable Credential, add your data properties in the `credentialSubject` section of the JSON:
+
+```json
+curl -X PUT localhost:8080/v1/schemas -d '{
+  "name": "Email Credential",
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "credentialSubject": {
+        "type": "object",
+        "properties": {
+          "emailAddress": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": ["emailAddress"]
+      }
+    }
+  }
+}'
+```

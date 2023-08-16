@@ -1,0 +1,13 @@
+How to use SSI Service to create a DID with did:ion method
+
+-----
+
+To create a did:ion DID, run the following request:
+
+```bash
+curl -X PUT localhost:8080/v1/dids/ion -d '{"keyType":"Ed25519"}'
+```
+
+'Ed25519' is used as the key type in this example as it is sufficient for generating digital signatures and is known for its high level of security and efficiency, however you can use other applicable key types.
+
+More info on supported DID methods: https://developer.tbd.website/docs/glossary#did-method
