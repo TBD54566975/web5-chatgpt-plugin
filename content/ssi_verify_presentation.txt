@@ -1,0 +1,21 @@
+How to verify a presentation with SSI Service
+
+-----
+
+A VC holder may provide a Verifiable Presentation for verification, which is an object that serves as an authenticated wrapper around a set of credentials they wish to have verified.
+
+You can use the SSI Service to verify a VC Presentation by making a `PUT` request to `/v1/presentations/verification`. A sample request is as follows:
+
+```bash
+curl -X PUT localhost:3000/v1/presentations/verification -d '{
+    "presentationJwt": "eyJhbGciOixlQ3JlZGVudGlhbCI6WyJ..."
+}'
+```
+
+Upon success we see a response such as:
+
+```json
+{ 
+  "verified": true
+}
+```
