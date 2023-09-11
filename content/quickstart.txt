@@ -3,13 +3,13 @@ To get going quickly with web5.js, follow these instructions to setup a node.js 
 -----
 
 
-command line: npm install @tbd54566975/web5@0.7.9
+command line: npm install @web5/api
 
 
 # modify package.json:
 {
   "dependencies": {
-    "@tbd54566975/web5": "0.7.9"
+    "@web5/api": "0.8.1"
   },
   "type": "module"
 }
@@ -24,7 +24,7 @@ touch index.js
 
 # in index.js: 
 
-import { Web5 } from '@tbd54566975/web5';
+import { Web5 } from '@web5/api';
 
 
 // The Web5 class is an isolated API object for doing all things Web5 and the connect() function creates an instance of Web5.

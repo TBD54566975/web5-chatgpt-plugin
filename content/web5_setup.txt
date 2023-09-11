@@ -8,7 +8,7 @@ npm install @tbd54566975/web5@0.7.9
 
 {
   "dependencies": {
-    "@tbd54566975/web5": "0.7.9"
+    "@web5/api": "0.8.1"
   },
   "type": "module"
 }
