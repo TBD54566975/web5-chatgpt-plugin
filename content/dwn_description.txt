@@ -32,15 +32,13 @@ All communication is done through simple JSON objects called messages. Web5 cons
   "descriptor": {
     "parentId": CID(PREVIOUS_DESCRIPTOR),
     "dataCid": CID(data),
-    "dateCreated": 123456789,
+    "dataSize": 56,
+    "dateCreated": "2023-09-11T03:19:59.876398Z",
     "published": true,
-    "encryption": "jwe",
     "interface": "Records",
     "method": "Write",
     "schema": "https://schema.org/SocialMediaPosting",
-    "commitStrategy": "json-merge",
     "dataFormat": "application/json"
-  }
 }
 
 More reading: https://identity.foundation/decentralized-web-node/spec/

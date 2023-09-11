@@ -22,7 +22,7 @@ In this tutorial, you’ll work through completing the /todo-app/src/App.vue fil
 Setup
 Add Web5 to package.json in the dependencies section:
 
-  "@tbd54566975/web5": "0.7.9",
+  "@web5/api": "0.8.1",
 
 Download the necessary packages by running these commands:
 
