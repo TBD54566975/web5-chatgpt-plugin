@@ -155,7 +155,7 @@ def ask_chat_route():
             yield 'data: Sorry, I don\'t know about that topic. Please try again.\n\n'
             return
         completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-3.5-turbo-16k",
             messages=messages,
             stream=True
         )
