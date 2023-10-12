@@ -45,14 +45,29 @@ const { protocol, status } = await web5.dwn.protocols.configure({
 }
 
 
-// using a protocol looks like this: 
+// using a protocol to write a record: 
 
-    const { record, status } = await web5.dwn.records.write({
-      data: ding,
-      message: {
-        protocol: 'http://credential-issuance-protocol.xyz',
-        protocolPath: 'credentialApplication',
-        schema: '...',
-        recipient: did
-      }
-    });
+const { record: application, status } = await web5.dwn.records.write({
+  data: ding,
+  message: {
+    protocol: 'http://credential-issuance-protocol.xyz',
+    protocolPath: 'credentialApplication',
+    schema: 'https://identity.foundation/credential-manifest/schemas/credential-application',
+    recipient: did
+  }
+});
+
+// using a protocol to write a child record
+
+const { record: response, status } = await web5.dwn.records.write({
+  data: ding,
+  message: {
+    protocol: 'http://credential-issuance-protocol.xyz',
+    protocolPath: 'credentialApplication/credentialResponse',
+    schema: 'https://identity.foundation/credential-manifest/schemas/credential-response',
+    recipient: applicantDid,
+    dataFormat: 'application/json',
+    parentId: application.id,
+    contextId: application.contextId,
+  }
+});
