@@ -18,3 +18,5 @@ const response = await web5.dwn.records.query({
 
 // logs array of Record class instances
 console.log(response.entries) 
+
+Note that records.query() does not guarantee that the data is returned unless it is under a specific threshold (50 kb). To guarantee record data, call records.read().

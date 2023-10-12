@@ -1,0 +1,31 @@
+Shows how to sort query results of DWN records and protocols
+-----
+
+Query results can be sorted via the dateSort field. Valid values for dateSort are:
+
+* createdAscending - sorts by dateCreated in ascending order
+* createdDescending - sorts by dateCreated in descending order
+* publshedAscending	- sorts by datePublished in ascending order
+* publishedDescending- sorts by datePublished in descending order
+
+
+//Ascending Order - queries for records with a plain text data format, and returns them in ascending order by the date they were published:
+const response = await web5.dwn.records.query({
+    message: {
+      filter: {
+        dataFormat: 'text/plain',
+      },
+      dateSort: 'publishedAscending',
+    },
+  });
+
+
+//Descending Order - queries for protocols with a certain URL, and returns them in descending order by the date they were created.
+const { protocols } = await web5.dwn.protocols.query({
+    message: {
+      filter: {
+        protocol: 'http://social-media.xyz',
+      },
+      dateSort: 'createdDescending'
+    },
+  });
