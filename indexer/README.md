@@ -1,0 +1,1 @@
+Creates an assistant in openai - as an experiment.

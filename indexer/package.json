@@ -1,0 +1,18 @@
+{
+    "name": "website-assistant",
+    "version": "1.0.0",
+    "description": "Fetches content from a website and logs it.",
+    "main": "index.js",
+    "scripts": {
+        "start": "node indexer.js"
+    },
+    "dependencies": {
+        "jsdom": "^22.1.0",
+        "node-fetch": "^2.6.1",
+        "openai": "^4.17.5",
+        "sitemapper": "^3.2.6"
+    },
+    "author": "",
+    "license": "ISC",
+    "type": "module"
+}
