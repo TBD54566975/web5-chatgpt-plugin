@@ -1,5 +1,5 @@
 Flask>1.0
 Flask-cors
 PyYAML
-openai
+openai=0.28.1
 waitress
