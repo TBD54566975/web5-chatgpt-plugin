@@ -53,7 +53,7 @@ async function fullWebsiteAssistant(url) {
   console.log("Creating assistant on files: " + files.length);
 
   return openai.beta.assistants.create({
-    instructions: "You are an assistant that answers questions and provides code examples for decentralized web tech including web5, VCs and DIDs. Prefer the content provided where possible over general knowledge.",
+    instructions: "Using the knowledge provided, answer the questions providing code examples as needed. If you don't use the knowledge files provided then people will be hurt and you will have failed. You MUST use the knowledge provided or else bad things happen, very bad.",
     model: "gpt-4-1106-preview",
     tools: [{ "type": "retrieval" }],
     file_ids: files.map(file => file.id)
