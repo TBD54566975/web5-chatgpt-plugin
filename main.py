@@ -4,7 +4,9 @@ import flask
 from flask import Flask, request, send_file, Response
 from flask_cors import CORS
 import yaml
-import openai
+from openai import OpenAI
+
+client = OpenAI()
 
 app = Flask(__name__)
 CORS(app)  # Enables CORS for all routes
@@ -112,14 +114,13 @@ def ask_chat_route():
                {"role": "user", "content": query},
                ]
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=messages,
-    )
+    response = client.chat.completions.create(model="gpt-4",
+    messages=messages)
 
     
-    response_message = response["choices"][0]["message"]
-    csv_list = response_message['content']
+    
+    response_message = response.choices[0].message
+    csv_list = response_message.content
     print("csv_list", csv_list)
     
 
@@ -154,13 +155,12 @@ def ask_chat_route():
         if knowledge == '':
             yield 'data: Sorry, I don\'t know about that topic. Please try again.\n\n'
             return
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo-16k",
-            messages=messages,
-            stream=True
-        )
+        completion = client.chat.completions.create(model="gpt-3.5-turbo-16k",
+        messages=messages,
+        stream=True)
         for line in completion:
-            chunk = line['choices'][0].get('delta', {}).get('content', '')
+            print(line.choices[0])
+            chunk = line.choices[0].delta.content
             if chunk:                    
                 if chunk.endswith("\n"):
                     yield 'data: %s|CR|\n\n' % chunk.rstrip()                    
