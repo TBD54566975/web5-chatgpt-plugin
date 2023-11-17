@@ -99,6 +99,47 @@ def openapi_spec():
 @app.route("/ask_chat", methods=['GET'])
 def ask_chat_route():
     query = request.args.get('query')    
+
+
+    #
+    # Try out the new assistant api. 
+    # Downside is it is slow, and non streaming, so parking this for now.
+    #
+    thread = client.beta.threads.create(  messages=[
+        {
+        "role": "user",
+        "content": "What is web5?"
+        }
+    ])
+
+
+    run = client.beta.threads.runs.create(
+        thread_id=thread.id,
+        assistant_id="asst_65w7TyJOkPuVu868Mjid2oxR"
+    )
+
+    while run.status not in ["completed", "failed"]:
+
+        messages = client.beta.threads.messages.list(
+            thread_id=thread.id
+        )
+
+        print(run.status)
+        print(run.id)
+
+        # reload the run
+        run = client.beta.threads.runs.retrieve(
+            thread_id=thread.id,
+            run_id=run.id
+        )
+
+        messages = client.beta.threads.messages.list(
+         thread_id=thread.id
+        )
+        print(messages)
+
+
+
     
     messages = [{"role": "system", "content": "you are a helpful assistant to find the best names that match what knowledge is being asked for. Return only a list of matching names as requested."},
                {"role": "user", "content": "I will provide you lists of json objects which map a name of a piece of knowledge to a description. You then take a question from the website developer.tbd.website and return a list of names that best the question, 2 to 3 ideally."},
@@ -159,7 +200,6 @@ def ask_chat_route():
         messages=messages,
         stream=True)
         for line in completion:
-            print(line.choices[0])
             chunk = line.choices[0].delta.content
             if chunk:                    
                 if chunk.endswith("\n"):
