@@ -1,0 +1,17 @@
+Update from Decentralized Web Nodes
+-----
+
+
+// The following snippet allows you to update from your Web5 instance’s DWN:
+
+// Get the record
+const { record } = await web5.dwn.records.read({
+  message: {
+    filter: {
+      recordId: createdRecord.id
+    }
+  }
+});
+
+// Update the record
+const {status} = await record.update({ data: "Hello, I'm updated!" });
