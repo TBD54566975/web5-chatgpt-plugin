@@ -114,7 +114,7 @@ def ask_chat_route():
                {"role": "user", "content": query},
                ]
 
-    response = client.chat.completions.create(model="gpt-4",
+    response = client.chat.completions.create(model="gpt-4-1106-preview",
     messages=messages)
 
     
