@@ -5,7 +5,7 @@ from openai.types.chat import ChatCompletion
 
 MONTHLY_USAGE_LIMIT_USD = os.getenv("WEB5GPT_MONTHLY_USAGE_LIMIT_USD")
 
-TOTAL_DAILY_COST_LIMIT = 500.0 / 30.0
+DEFAULT_MONTHLY_USAGE_LIMIT_USD = 500.0
 
 # Pricing rates updated on 2023-12-19
 MODELS_COSTS = {
@@ -15,28 +15,30 @@ MODELS_COSTS = {
 
 class UsageCostTracker:
     def __init__(self):
-        self.current_date = None
-        self.daily_usage_cost = 0.0
+        self.current_date = datetime.datetime.now().date()
+        self.monthly_usage_cost = 0.0
         self.tokenizer = tiktoken.get_encoding("cl100k_base")
 
         # initialize monthly usage limit in USD
         if MONTHLY_USAGE_LIMIT_USD:
-            self.total_daily_cost_limit = float(MONTHLY_USAGE_LIMIT_USD) / 30.0
+            self.total_monthly_limit = float(MONTHLY_USAGE_LIMIT_USD)
         else:
-            self.total_daily_cost_limit = TOTAL_DAILY_COST_LIMIT
-        print(">>> Total daily cost limit: $%.2f" % self.total_daily_cost_limit)
+            self.total_monthly_limit = DEFAULT_MONTHLY_USAGE_LIMIT_USD
+        print(">>> Total monthly cost limit: $%.2f" % self.total_monthly_limit)
 
     def check_usage_costs(self):
         today = datetime.datetime.now().date()
 
-        # Reset the daily usage cost if it's a new day
-        if self.current_date != today:
-            self.daily_usage_cost = 0.0
+        # Reset the monthly usage cost if it's a new month
+        if self.current_date.month != today.month:
+            print(">>> New month, resetting monthly usage cost")
+            print(">>> Current Monthly usage cost: $%.4f (of $%.2f)" % (self.monthly_usage_cost, self.total_monthly_limit))
+            self.monthly_usage_cost = 0.0
             self.current_date = today
 
-        # Check if the daily usage cost has exceeded the limit
-        if self.daily_usage_cost >= self.total_daily_cost_limit:
-            raise Exception(f">>> ERROR! Daily usage cost ${self.daily_usage_cost:.2f} exceeded limit of ${self.total_daily_cost_limit:.2f}")
+        # Check if the monthly usage cost has exceeded the limit
+        if self.monthly_usage_cost >= self.total_monthly_limit:
+            raise Exception(f">>> ERROR! Monthly usage cost ${self.monthly_usage_cost:.2f} exceeded limit of ${self.total_monthly_limit:.2f}")
         
     def compute_response_costs(self, response: ChatCompletion):
         if not response.usage or not response.model:
@@ -58,8 +60,8 @@ class UsageCostTracker:
         total_cost = input_cost + output_cost
         print(">>> Total cost: $%.4f" % total_cost)
 
-        self.daily_usage_cost += total_cost
-        print(">>> Current Daily usage cost: $%.4f (of $%.2f)" % (self.daily_usage_cost, self.total_daily_cost_limit))
+        self.monthly_usage_cost += total_cost
+        print(">>> Current Monthly usage cost: $%.4f (of $%.2f)" % (self.monthly_usage_cost, self.total_monthly_limit))
 
 
     def compute_messages_cost(self, messages, model_name):
@@ -97,8 +99,8 @@ class UsageCostTracker:
 
         usage_cost = calculate_tokens_cost(tokens, price_per_thousand_tokens)
 
-        self.daily_usage_cost += usage_cost
-        print(f">>> Added cost: ${usage_cost:.4f}, New daily usage: ${self.daily_usage_cost:.4f} (of ${self.total_daily_cost_limit:.2f})")
+        self.monthly_usage_cost += usage_cost
+        print(f">>> Added cost: ${usage_cost:.4f}, New monthly usage: ${self.monthly_usage_cost:.4f} (of ${self.total_monthly_limit:.2f})")
 
     def count_tokens(self, text):  
         return len(self.tokenizer.encode(text))
