@@ -81,13 +81,6 @@ class UsageCostTracker:
         self.compute_tokens_cost(num_tokens, model_name)
 
 
-    def compute_stream_cost(self, chunk, model_name):
-        token_count = self.count_tokens(chunk)
-
-        # Assuming the chunk is the response content
-        self.compute_tokens_cost(token_count, model_name, is_output=True)
-
-
     def compute_tokens_cost(self, tokens, model_name, is_output=False):
         if model_name not in MODELS_COSTS:
             print(">>> WARNING! Model not found in MODELS_COSTS, impossible to compute costs")

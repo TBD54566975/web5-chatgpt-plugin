@@ -102,8 +102,8 @@ def openapi_spec():
 def ask_chat_route():
     usage_cost_tracker.check_usage_costs()
 
-    query = request.args.get('query')    
-    
+    query = request.args.get('query')
+
     messages = [{"role": "system", "content": "you are a helpful assistant to find the best names that match what knowledge is being asked for. Return only a list of matching names as requested."},
                {"role": "user", "content": "I will provide you lists of json objects which map a name of a piece of knowledge to a description. You then take a question from the website developer.tbd.website and return a list of names that best the question, 2 to 3 ideally."},
                {"role": "assistant", "content": "Got it."},
@@ -121,11 +121,11 @@ def ask_chat_route():
     response = client.chat.completions.create(model="gpt-4-1106-preview",
     messages=messages)
     usage_cost_tracker.compute_response_costs(response)
-    
+
     response_message = response.choices[0].message
     csv_list = response_message.content
     print("csv_list", csv_list)
-    
+
 
     csv_list = csv_list.split(',')
 
@@ -144,7 +144,7 @@ def ask_chat_route():
         _, code = content.split('-----', 1)
         knowledge += f"{item}:\n\n{code}\n\n"
 
-    
+
 
     messages = [{"role": "system", "content": "You are a helpful assistant that provides code examples and explanations when context is provided. Please don't invent APIs. Code examples should be surrounded with markdown backticks to make presentation easy."},
             {"role": "user", "content": "Please don't hallucinate responses if you don't know what the API is, stick to the content you know. Also remember code examples should be surrounded with markdown backticks to make presentation easy."},
@@ -155,6 +155,8 @@ def ask_chat_route():
 
 
     def stream():
+        response_tokens = 0
+        
         if knowledge == '':
             yield 'data: Sorry, I don\'t know about that topic. Please try again.\n\n'
             return
@@ -165,19 +167,22 @@ def ask_chat_route():
         for line in completion:
             print(line.choices[0])
             chunk = line.choices[0].delta.content
-            if chunk:   
-                usage_cost_tracker.compute_stream_cost(chunk, "gpt-3.5-turbo-16k")                 
-                if chunk.endswith("\n"):
-                    yield 'data: %s|CR|\n\n' % chunk.rstrip()                    
-                else:
-                    yield 'data: %s\n\n' % chunk                    
+            if chunk:
+                response_tokens += usage_cost_tracker.count_tokens(chunk)
 
-        
-    return flask.Response(stream(), mimetype='text/event-stream')        
+                if chunk.endswith("\n"):
+                    yield 'data: %s|CR|\n\n' % chunk.rstrip()
+                else:
+                    yield 'data: %s\n\n' % chunk
+
+        # Post process the response to add the cost    
+        usage_cost_tracker.compute_tokens_cost(response_tokens, "gpt-3.5-turbo-16k", is_output=True)
+
+    return flask.Response(stream(), mimetype='text/event-stream')
 
 
 def get_chat_functions():
-    functions = []    
+    functions = []
     for filename in os.listdir('content'):
         if filename.endswith('.txt'):
             topic = filename[:-4]
@@ -187,7 +192,7 @@ def get_chat_functions():
                     "name": f"{topic}",
                     "description": explanation.strip()
                 })
-    
+
     return functions
 
 def main():
