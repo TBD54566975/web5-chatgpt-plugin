@@ -52,6 +52,13 @@ ASK_QUERY=$(sed "s/ /%20/g" <<<"$ASK_QUERY") # encodes whitespaces
 curl "http://localhost:5003/ask_chat?query=$ASK_QUERY"
 ```
 
+## Deployment settings
+
+Environment variables used in the server:
+
+- `WEB5GPT_MONTHLY_USAGE_LIMIT_USD` - sets the monthly usage limit in USD for the `/ask_chat` endpoint. The service actually just set a daily limit by dividing this number by 30. By default this is $500/30 = ~$16.66 per day.
+- `OPENAI_API_KEY` - define the OpenAI API Key
+
 ## Getting help
 
 If you run into issues or have questions building a plugin, please join our [Developer community forum](https://community.openai.com/c/chat-plugins/20).
