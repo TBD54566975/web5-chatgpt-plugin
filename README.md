@@ -52,6 +52,12 @@ ASK_QUERY=$(sed "s/ /%20/g" <<<"$ASK_QUERY") # encodes whitespaces
 curl "http://localhost:5003/ask_chat?query=$ASK_QUERY"
 ```
 
+## Running with Docker
+
+1. Install docker on your computer
+2. Set the OPENAI_API_KEY in the `docker-compose.yaml` file
+3. Execute `docker compose up`
+
 ## Deployment settings
 
 Environment variables used in the server:
