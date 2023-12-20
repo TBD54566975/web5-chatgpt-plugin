@@ -5,8 +5,10 @@ from flask import Flask, request, send_file, Response
 from flask_cors import CORS
 import yaml
 from openai import OpenAI
+from usage_cost_tracker import UsageCostTracker
 
 client = OpenAI()
+usage_cost_tracker = UsageCostTracker()
 
 app = Flask(__name__)
 CORS(app)  # Enables CORS for all routes
@@ -98,6 +100,8 @@ def openapi_spec():
 
 @app.route("/ask_chat", methods=['GET'])
 def ask_chat_route():
+    usage_cost_tracker.check_usage_costs()
+
     query = request.args.get('query')    
     
     messages = [{"role": "system", "content": "you are a helpful assistant to find the best names that match what knowledge is being asked for. Return only a list of matching names as requested."},
@@ -116,8 +120,7 @@ def ask_chat_route():
 
     response = client.chat.completions.create(model="gpt-4-1106-preview",
     messages=messages)
-
-    
+    usage_cost_tracker.compute_response_costs(response)
     
     response_message = response.choices[0].message
     csv_list = response_message.content
@@ -158,10 +161,12 @@ def ask_chat_route():
         completion = client.chat.completions.create(model="gpt-3.5-turbo-16k",
         messages=messages,
         stream=True)
+        usage_cost_tracker.compute_messages_cost(messages, "gpt-3.5-turbo-16k")
         for line in completion:
             print(line.choices[0])
             chunk = line.choices[0].delta.content
-            if chunk:                    
+            if chunk:   
+                usage_cost_tracker.compute_stream_cost(chunk, "gpt-3.5-turbo-16k")                 
                 if chunk.endswith("\n"):
                     yield 'data: %s|CR|\n\n' % chunk.rstrip()                    
                 else:

@@ -3,3 +3,4 @@ Flask-cors
 PyYAML
 openai
 waitress
+tiktoken
